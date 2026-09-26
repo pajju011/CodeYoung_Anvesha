@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   X, Video, Mic, MicOff, VideoOff, Volume2, VolumeX, Monitor, CheckCircle,
   Clock, Play, RotateCcw, PenTool, Code, MessageSquare, Send,
-  ExternalLink, ArrowLeft, Maximize2, Sparkles, RefreshCw, Hand
+  ExternalLink, ArrowLeft, Maximize2, Minimize2, Sparkles, RefreshCw, Hand
 } from 'lucide-react';
 import { DEMO_MENTORS } from '../data/mentors';
 
@@ -34,6 +34,19 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
   // Mentor speech audio synthesis state
   const [isMentorSpeaking, setIsMentorSpeaking] = useState(false);
   const [mentorSpeechText, setMentorSpeechText] = useState('');
+
+  // Enlarged Mentor Screen Spotlight State
+  const [isMentorLarge, setIsMentorLarge] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsMentorLarge(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Class countdown timer (45:00)
   const [secondsRemaining, setSecondsRemaining] = useState(45 * 60);
@@ -621,7 +634,32 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
             </div>
 
             {/* 2. Mentor Video Feed (Always Displays Mentor's Photo + Live Speech) */}
-            <div className={`video-feed-mock mentor-feed ${isMentorSpeaking ? 'mentor-is-speaking' : ''}`}>
+            <div
+              className={`video-feed-mock mentor-feed is-clickable ${isMentorSpeaking ? 'mentor-is-speaking' : ''}`}
+              onClick={() => setIsMentorLarge(true)}
+              title="Click anywhere to enlarge mentor screen"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setIsMentorLarge(true);
+                }
+              }}
+            >
+              <button
+                type="button"
+                className="btn-enlarge-corner"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMentorLarge(true);
+                }}
+                title="Enlarge mentor screen"
+                aria-label="Enlarge mentor screen"
+              >
+                <Maximize2 size={12} />
+              </button>
+
               <div className={`mentor-feed-avatar-box ${isMentorSpeaking ? 'is-speaking' : ''}`}>
                 {mentorPhoto ? (
                   <img
@@ -647,10 +685,13 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
                     <span className="speaking-wave-dot"></span> HD Video Streaming
                   </span>
                 )}
+                <span className="mentor-click-enlarge-hint">
+                  <Maximize2 size={10} /> Click to enlarge
+                </span>
               </div>
 
               {/* Live Mentor Voice Controller */}
-              <div className="mentor-voice-actions">
+              <div className="mentor-voice-actions" onClick={(e) => e.stopPropagation()}>
                 <button
                   type="button"
                   className={`btn-hear-mentor ${isMentorSpeaking ? 'is-active-speaking' : ''}`}
@@ -691,7 +732,7 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
 
               {/* Live Speech Subtitle Caption Bubble */}
               {isMentorSpeaking && mentorSpeechText && (
-                <div className="mentor-speech-caption-bubble">
+                <div className="mentor-speech-caption-bubble" onClick={(e) => e.stopPropagation()}>
                   <span className="caption-label">Mentor Speaking:</span>
                   <p className="caption-text">"{mentorSpeechText}"</p>
                 </div>
@@ -992,18 +1033,149 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
     </div>
   );
 
-  if (isStandalonePage) {
-    return (
-      <div className="classroom-standalone-page">
-        {content}
-      </div>
-    );
-  }
-
-  return (
+  const modalMarkup = isStandalonePage ? (
+    <div className="classroom-standalone-page">
+      {content}
+    </div>
+  ) : (
     <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="classroom-title">
       {content}
     </div>
+  );
+
+  return (
+    <>
+      {modalMarkup}
+
+      {/* Enlarged Mentor Screen Spotlight Theater */}
+      {isMentorLarge && (
+        <div
+          className="mentor-large-overlay"
+          onClick={() => setIsMentorLarge(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged Mentor Screen"
+        >
+          <div
+            className="mentor-large-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="mentor-large-header">
+              <div className="mentor-large-title-group">
+                <span className="live-indicator-dot"></span>
+                <span className="badge badge-success">HD 1080p Stream</span>
+                <h3 className="mentor-large-name">{booking.mentorName} (Mentor)</h3>
+                <span className="mentor-large-tz">({mentorTimeDisplay})</span>
+              </div>
+              <div className="mentor-large-actions">
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setIsMentorLarge(false)}
+                  title="Minimize back to tile"
+                >
+                  <Minimize2 size={14} />
+                  <span>Minimize Screen</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm modal-close-btn"
+                  onClick={() => setIsMentorLarge(false)}
+                  aria-label="Close enlarged screen"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Stage Body */}
+            <div className="mentor-large-stage">
+              <div className="mentor-large-video-frame">
+                <div className={`mentor-large-avatar-wrap ${isMentorSpeaking ? 'is-speaking' : ''}`}>
+                  {mentorPhoto ? (
+                    <img
+                      src={mentorPhoto}
+                      alt={booking.mentorName}
+                      className="mentor-large-photo"
+                    />
+                  ) : (
+                    <div className="mentor-large-initials">
+                      {booking.mentorName.split(' ').map((n) => n[0]).join('')}
+                    </div>
+                  )}
+                  {isMentorSpeaking && <div className="large-speaking-ring"></div>}
+                </div>
+
+                <div className="mentor-large-overlay-badge">
+                  <span className="speaking-wave-dot"></span>
+                  <span>{isMentorSpeaking ? 'Audio Streaming (Speaking)' : 'Live Mentor Camera Stream'}</span>
+                </div>
+              </div>
+
+              {/* Subtitles inside enlarged stage */}
+              {isMentorSpeaking && mentorSpeechText && (
+                <div className="mentor-large-caption-bubble">
+                  <div className="caption-speaker-row">
+                    <Volume2 size={13} className="text-success" />
+                    <strong>{booking.mentorName}:</strong>
+                  </div>
+                  <p className="caption-quote">"{mentorSpeechText}"</p>
+                </div>
+              )}
+
+              {/* Mentor Credentials banner */}
+              <div className="mentor-large-details">
+                <div className="mentor-large-subtitle">
+                  {matchedMentor?.title || 'Lead Scratch & Python Educator'} · {matchedMentor?.education || 'Computer Science Specialist'}
+                </div>
+                <div className="mentor-large-tags">
+                  <span className="badge badge-secondary">{matchedMentor?.experienceYears || 5}+ Years Experience</span>
+                  <span className="badge badge-secondary">{matchedMentor?.specialties?.join(' • ') || 'Scratch & Python'}</span>
+                  <span className="badge badge-secondary">{matchedMentor?.languages?.join(', ') || 'English'}</span>
+                </div>
+              </div>
+
+              {/* Large Voice Action Controls */}
+              <div className="mentor-large-voice-bar">
+                <button
+                  type="button"
+                  className={`btn-large-hear ${isMentorSpeaking ? 'is-speaking' : ''}`}
+                  onClick={() => handleToggleMentorSpeech()}
+                >
+                  {isMentorSpeaking ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                  <span>{isMentorSpeaking ? 'Stop Mentor Voice' : 'Hear Mentor Audio Greeting'}</span>
+                </button>
+
+                <div className="mentor-large-preset-group">
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleToggleMentorSpeech(`Hello ${booking.studentName}! I am ${booking.mentorName}. Welcome to EduNexa! Let's write some fun code together today.`)}
+                  >
+                    👋 Greet Student
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleToggleMentorSpeech(`Tip from Mentor ${booking.mentorName}: Remember that computer programming is all about breaking big problems into smaller, logical steps!`)}
+                  >
+                    💡 Coding Tip
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleToggleMentorSpeech(`Great job ${booking.studentName}! Your effort and curiosity are shining through in this trial class!`)}
+                  >
+                    🎉 Encouragement
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

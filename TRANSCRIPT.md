@@ -1,7 +1,7 @@
 # AI Session Transcript - EduNexa 1-on-1 Trial Class Appointment Booking System
 
 > Full conversation transcript exported as per task submission requirement.
-> Generated: 2026-09-26T17:04:29.411Z
+> Generated: 2026-09-26T17:08:16.890Z
 
 ---
 
@@ -1042,6 +1042,49 @@ Other open documents:
 - c:\Users\ASUS\Desktop\Trail_Class\src\components\Footer.jsx (LANGUAGE_JAVASCRIPT)
 - c:\Users\ASUS\Desktop\Trail_Class\src\utils\calendarUtils.js (LANGUAGE_JAVASCRIPT)
 - c:\Users\ASUS\Desktop\Trail_Class\src\App.css (LANGUAGE_CSS)
+</ADDITIONAL_METADATA>
+
+---
+
+### Assistant Response
+
+We have added the requested functionality to the Virtual Live Classroom video panel and device controls in [`DemoClassroomModal.jsx`](file:///c:/Users/ASUS/Desktop/Trail_Class/src/components/DemoClassroomModal.jsx) and [`App.css`](file:///c:/Users/ASUS/Desktop/Trail_Class/src/App.css):
+
+---
+
+### What Was Enhanced & Added
+
+1. **Guaranteed Mentor Photo Display:**
+   - **Resolved Initials Issue:** Older or existing bookings previously defaulted to initials `[ PN ]` if `booking.mentorImageUrl` was undefined.
+   - **Fallback Matching:** The modal now matches against [`DEMO_MENTORS`](file:///c:/Users/ASUS/Desktop/Trail_Class/src/data/mentors.js) by mentor ID or name, ensuring **Priya Nair's** (and all 10 mentors') high-resolution Unsplash photo is displayed.
+
+2. **Interactive Mentor Voice & Live Speech Synthesis (`window.speechSynthesis`):**
+   - **Hear Mentor Button:** Clicking **`[ 🔊 Hear Mentor ]`** triggers live audio narration in the browser from Priya Nair welcoming the student to EduNexa.
+   - **Interactive Quick Presets:** Added preset voice chips:
+     - `👋 Greet`: Welcome message tailored to the student and track title.
+     - `💡 Tip`: Mentor coding tip on functions and indentation.
+     - `🎉 Cheer`: Positive encouragement and praise.
+   - **Visual Speech Feedback:** An animated green pulsating ripple ring (`.mentor-speaking-ring`) radiates around the mentor's photo while speaking, accompanied by a live speech subtitle caption bubble beneath the feed.
+
+3. **Student Ca
+
+*(Truncated for readability)*
+
+---
+
+## User Request #21
+
+<USER_REQUEST>
+when ever studen click on mentor screen it will large 
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-26T22:35:00+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\ASUS\Desktop\Trail_Class\src\components\DemoClassroomModal.jsx (LANGUAGE_JAVASCRIPT)
+Cursor is on line: 646
+Other open documents:
+- c:\Users\ASUS\Desktop\Trail_Class\src\components\DemoClassroomModal.jsx (LANGUAGE_JAVASCRIPT)
 </ADDITIONAL_METADATA>
 
 ---
