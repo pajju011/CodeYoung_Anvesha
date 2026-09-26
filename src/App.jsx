@@ -17,6 +17,7 @@ import { Footer } from './components/Footer';
 import { detectUserTimezone, getTimezoneMeta } from './data/timezones';
 import { LEARNING_TRACKS } from './data/subjects';
 import { getStoredBookings, saveBooking, cancelStoredBooking } from './utils/storageUtils';
+import { submitBooking, cancelBookingApi } from './services/api';
 
 export function App() {
   // Timezone selection
@@ -72,13 +73,13 @@ export function App() {
     window.scrollTo({ top: 120, behavior: 'smooth' });
   };
 
-  const handleConfirmBooking = () => {
+  const handleConfirmBooking = async () => {
     const tzMeta = getTimezoneMeta(selectedTimezone);
     const track = LEARNING_TRACKS.find((t) => t.id === selectedTrackId) || LEARNING_TRACKS[0];
     const mentor = selectedSlot.primaryMentor;
-    const refCode = `TC-${Math.floor(10000 + Math.random() * 90000)}`;
+    const refCode = `CY-${Math.floor(10000 + Math.random() * 90000)}`;
 
-    const newBooking = {
+    const bookingPayload = {
       id: `booking_${Date.now()}`,
       referenceCode: refCode,
       slotUtc: selectedSlot.utcDate.toISOString(),
@@ -97,23 +98,34 @@ export function App() {
       parentEmail: formData.parentEmail,
       parentPhone: formData.parentPhone,
       studentName: formData.studentName,
-      studentAgeGroup: formData.studentAge,
+      studentAge: formData.studentAge,
       studentExperience: formData.studentExperience,
       studentGoals: formData.studentGoals,
-      classroomUrl: `https://classroom.trialclass.demo/live/${refCode}`,
+      classroomUrl: `https://classroom.codeyoung.demo/live/${refCode}`,
       status: 'confirmed',
       createdAt: new Date().toISOString(),
     };
 
-    const updated = saveBooking(newBooking);
-    setBookings(updated);
-    setConfirmedBooking(newBooking);
-    setCurrentStep(5); // Confirmation view
-    window.scrollTo({ top: 80, behavior: 'smooth' });
+    try {
+      const confirmed = await submitBooking(bookingPayload);
+      const allBookings = getStoredBookings();
+      setBookings(allBookings);
+      setConfirmedBooking(confirmed);
+      setCurrentStep(5); // Confirmation view
+      window.scrollTo({ top: 80, behavior: 'smooth' });
+    } catch (err) {
+      console.error('Booking failed:', err);
+      // Fallback
+      saveBooking(bookingPayload);
+      setBookings(getStoredBookings());
+      setConfirmedBooking(bookingPayload);
+      setCurrentStep(5);
+      window.scrollTo({ top: 80, behavior: 'smooth' });
+    }
   };
 
-  const handleCancelBooking = (bookingId) => {
-    const updated = cancelStoredBooking(bookingId);
+  const handleCancelBooking = async (bookingId) => {
+    const updated = await cancelBookingApi(bookingId);
     setBookings(updated);
     if (confirmedBooking && confirmedBooking.id === bookingId) {
       setConfirmedBooking((prev) => ({ ...prev, status: 'cancelled' }));
