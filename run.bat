@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 title TrialClass - Codeyoung Appointment Booking System
 color 0b
 
@@ -7,40 +8,50 @@ echo   TrialClass: 1-on-1 Trial Class Appointment System
 echo ========================================================
 echo.
 
-:: Check if node is installed
+:: 1. Verify Node.js is installed
 where node >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [ERROR] Node.js is not found in PATH!
-    echo Please install Node.js v18 or higher to run this project.
+    echo [ERROR] Node.js is not found in your system PATH.
+    echo Please install Node.js v18 or higher from https://nodejs.org/
     echo.
     pause
     exit /b 1
 )
 
-:: Check if node_modules exists, install if missing
-if not exist "node_modules\" (
-    echo [INFO] node_modules not detected. Installing dependencies...
+:: 2. Check if react exists in node_modules, install if missing
+if not exist "node_modules\react\" (
+    echo [INFO] Installing required project dependencies...
+    echo This may take a moment on the first run...
+    echo.
     call npm install
     if %errorlevel% neq 0 (
-        echo [ERROR] npm install failed.
+        echo [ERROR] Dependency installation failed.
         pause
         exit /b 1
     )
+    echo [SUCCESS] Dependencies installed successfully.
     echo.
 )
 
-echo [INFO] Starting Backend API (Port 3001) and Frontend (Port 5173)...
+:: 3. Inform user about endpoints
+echo [INFO] Starting Full-Stack Application:
+echo   - Backend API Server: http://localhost:3001/api/health
+echo   - Frontend React UI:  http://localhost:5173/
 echo.
-echo Application will be available at:
-echo   - Frontend UI:  http://localhost:5173/
-echo   - Backend API:  http://localhost:3001/api/health
+echo [INFO] Opening http://localhost:5173/ in your default browser...
 echo.
-echo Press Ctrl+C anytime to stop the server.
+echo Press Ctrl+C anytime in this window to stop the application.
 echo ========================================================
 echo.
 
-:: Automatically open browser after 2 seconds in background
-start "" /b cmd /c "timeout /t 2 /nobreak >nul & start http://localhost:5173/"
+:: 4. Open default web browser after a 3-second delay
+start "" /b cmd /c "timeout /t 3 /nobreak >nul & start http://localhost:5173/"
 
-:: Launch backend and frontend concurrently
-npm run dev
+:: 5. Launch both Express backend and Vite frontend concurrently
+call npm run dev
+
+if %errorlevel% neq 0 (
+    echo.
+    echo [INFO] Server stopped.
+    pause
+)
