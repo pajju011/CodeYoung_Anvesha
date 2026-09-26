@@ -1,5 +1,5 @@
 /**
- * Client API service for TrialClass
+ * Client API service for EduNexa
  * Communicates with Node.js Express backend (/api/*), with local calculation fallback.
  */
 

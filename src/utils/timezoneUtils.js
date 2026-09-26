@@ -131,6 +131,73 @@ export const STANDARD_DAILY_SLOTS = [
 ];
 
 /**
+ * Determines whether Daylight Saving Time (DST) is active for a timezone and date
+ */
+export function getDstDetails(timeZone, dateObj = new Date()) {
+  try {
+    const year = dateObj.getFullYear();
+    const janDate = new Date(Date.UTC(year, 0, 1));
+    const julDate = new Date(Date.UTC(year, 6, 1));
+
+    const getOffset = (d) => {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        timeZoneName: 'shortOffset',
+      }).formatToParts(d);
+      return parts.find((p) => p.type === 'timeZoneName')?.value || '';
+    };
+
+    const currentTzName = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      timeZoneName: 'short',
+    }).formatToParts(dateObj).find((p) => p.type === 'timeZoneName')?.value || '';
+
+    const currentOffsetStr = getOffset(dateObj);
+    const janOffsetStr = getOffset(janDate);
+    const julOffsetStr = getOffset(julDate);
+
+    const hasDstInRegion = janOffsetStr !== julOffsetStr;
+    const isDstActive = hasDstInRegion && currentOffsetStr !== janOffsetStr;
+
+    return {
+      hasDstInRegion,
+      isDstActive,
+      abbr: currentTzName,
+      offset: currentOffsetStr,
+      explanation: isDstActive
+        ? `Daylight Saving Time (DST) is currently active (${currentTzName}, ${currentOffsetStr}). Schedules automatically adjust for seasonal time shifts.`
+        : hasDstInRegion
+        ? `Standard Time is active (${currentTzName}, ${currentOffsetStr}).`
+        : `Non-DST Timezone (${currentTzName}, ${currentOffsetStr}). Constant offset year-round.`,
+    };
+  } catch {
+    return {
+      hasDstInRegion: false,
+      isDstActive: false,
+      abbr: '',
+      offset: '',
+      explanation: 'Time converted based on standard UTC offset.',
+    };
+  }
+}
+
+/**
+ * Calculates how many bookings a mentor already has on a specific calendar day in their local timezone.
+ * Enforces requirement: "Mentors have at most 2 demo classes a day."
+ */
+export function getMentorBookingsCountOnDate(mentorId, mentorTimezone, targetDateUtc, bookedSlots = []) {
+  const targetDateInMentorZone = formatInTimezone(targetDateUtc, mentorTimezone, 'date-short');
+
+  return bookedSlots.filter((b) => {
+    if (b.status === 'cancelled') return false;
+    if (b.mentorId !== mentorId) return false;
+
+    const bookingDateInMentorZone = formatInTimezone(new Date(b.slotUtc), mentorTimezone, 'date-short');
+    return bookingDateInMentorZone === targetDateInMentorZone;
+  }).length;
+}
+
+/**
  * For a given date, user timezone, track, and list of existing booked appointments,
  * returns all slots with availability information and matched mentors.
  */
@@ -163,13 +230,24 @@ export function getAvailableSlotsForDate({
 
     // Find mentors working at this UTC moment
     const matchingMentors = DEMO_MENTORS.filter((mentor) => {
-      // Check if mentor is already booked for this UTC timestamp
+      // 1. Check if mentor is already booked for this UTC timestamp
       const isAlreadyBooked = bookedSlots.some(
         (b) => b.mentorId === mentor.id && Math.abs(new Date(b.slotUtc).getTime() - utcDate.getTime()) < 30 * 60 * 1000
       );
       if (isAlreadyBooked) return false;
 
-      // Mentor local time calculation
+      // 2. Enforce constraint: "Mentors have at most 2 demo classes a day"
+      const dailyCount = getMentorBookingsCountOnDate(
+        mentor.id,
+        mentor.timezone,
+        utcDate,
+        bookedSlots
+      );
+      if (dailyCount >= 2) {
+        return false;
+      }
+
+      // 3. Mentor local time calculation
       const mentorHourStr = new Intl.DateTimeFormat('en-US', {
         timeZone: mentor.timezone,
         hour: 'numeric',

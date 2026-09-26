@@ -254,6 +254,7 @@ export function calculateAvailableSlots({
             timezone: primaryMentor.timezone,
             timezoneAbbr: primaryMentor.timezoneAbbr,
             location: primaryMentor.location,
+            imageUrl: primaryMentor.imageUrl,
             mentorTimeStr,
           }
         : null,

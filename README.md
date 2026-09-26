@@ -1,6 +1,7 @@
-# Codeyoung Trial Class Appointment-Booking System
+# EduNexa — 1-on-1 Trial Class Appointment-Booking System
+> **Your time. Your mentor. Your class.**
 
-A full-stack, production-grade appointment booking platform built for Codeyoung's 1-on-1 trial class experience. The system enables parents to select convenient time slots, coordinates cross-timezone schedules between international parents (US/UK) and educators (India), strictly enforces educator capacity limits, handles Daylight Saving Time (DST) shifts, and automatically dispatches live classroom links and simulated calendar invitations.
+A full-stack, production-grade appointment booking platform built for 1-on-1 trial class experiences (Codeyoung engineering assignment). The system enables parents to select convenient time slots, coordinates cross-timezone schedules between international parents (US/UK) and educators (India), strictly enforces educator capacity limits, handles Daylight Saving Time (DST) shifts, and automatically dispatches live classroom links and simulated calendar invitations.
 
 ---
 
@@ -102,7 +103,15 @@ Seeded specifically for Codeyoung's trial class operations across timezones:
 - Node.js (v18+)
 - npm (v9+)
 
-### Installation
+### Quick Start on Windows (1-Click Launcher)
+Double-click `run.bat` in the project root (or execute `.\run.bat` in PowerShell/CMD).
+It automatically:
+1. Verifies Node.js installation (v18+).
+2. Auto-installs npm dependencies if missing.
+3. Launches both the Express Backend API (Port 3001) and Vite React Frontend (Port 5173) concurrently.
+4. Opens `http://localhost:5173` in your default web browser after 3 seconds.
+
+### Manual Installation
 ```bash
 # Clone the repository
 git clone <repo-url>
@@ -120,6 +129,7 @@ npm run dev
 
 - **Frontend Application:** [http://127.0.0.1:5173/](http://127.0.0.1:5173/)
 - **Backend API Server:** [http://127.0.0.1:3001/api/health](http://127.0.0.1:3001/api/health)
+- **Live Classroom (Dedicated New Tab):** [http://127.0.0.1:5173/?view=classroom&id=demo_session](http://127.0.0.1:5173/?view=classroom&id=demo_session)
 
 ### Running Backend and Frontend Individually (Optional)
 ```bash

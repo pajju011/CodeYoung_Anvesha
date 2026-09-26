@@ -54,11 +54,21 @@ export function App() {
   const [policyModalType, setPolicyModalType] = useState(null);
   const [demoClassroomBooking, setDemoClassroomBooking] = useState(null);
 
+  // Check if opened as dedicated classroom in a new tab: ?view=classroom&id=...
+  const urlParams = new URLSearchParams(window.location.search);
+  const isClassroomTab = urlParams.get('view') === 'classroom';
+  const classroomId = urlParams.get('id');
+
   // Load existing bookings on mount
   useEffect(() => {
     const stored = getStoredBookings();
     setBookings(stored);
   }, []);
+
+  const handleJoinDemoClass = (booking) => {
+    // Opens in a dedicated full new browser tab
+    window.open(`/?view=classroom&id=${booking.id}`, '_blank');
+  };
 
   const handleFormChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -89,6 +99,7 @@ export function App() {
       mentorId: mentor.id,
       mentorName: mentor.name,
       mentorTitle: mentor.title,
+      mentorImageUrl: mentor.imageUrl,
       mentorTimezone: mentor.timezone,
       mentorTimezoneAbbr: mentor.timezoneAbbr,
       mentorTimeStr: selectedSlot.mentorTimeStr,
@@ -138,6 +149,44 @@ export function App() {
     setMaxReachedStep(1);
     setSelectedSlot(null);
   };
+
+  // If opened in a dedicated new tab (?view=classroom&id=...), render full standalone classroom page
+  if (isClassroomTab) {
+    const targetBooking =
+      bookings.find((b) => b.id === classroomId) ||
+      getStoredBookings().find((b) => b.id === classroomId) ||
+      confirmedBooking || {
+        id: classroomId || 'demo_active_class',
+        referenceCode: 'CY-82914',
+        trackTitle: 'Math & Computational Logic',
+        studentName: 'Student',
+        studentAgeGroup: 'Ages 9–11',
+        studentExperience: 'Beginner',
+        mentorName: 'Amit Sharma',
+        mentorTitle: 'Robotics & Logic Specialist',
+        mentorImageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+        mentorTimezone: 'Asia/Kolkata',
+        mentorTimezoneAbbr: 'IST',
+        mentorTimeStr: '8:30 PM IST',
+        slotLabel: '8:30 PM – 9:15 PM',
+        userTimezone: selectedTimezone,
+        userTimezoneAbbr: getTimezoneMeta(selectedTimezone).abbr,
+      };
+
+    return (
+      <DemoClassroomModal
+        booking={targetBooking}
+        isStandalonePage={true}
+        onClose={() => {
+          if (window.opener) {
+            window.close();
+          } else {
+            window.location.href = '/';
+          }
+        }}
+      />
+    );
+  }
 
   return (
     <div className="app-layout">
@@ -220,7 +269,7 @@ export function App() {
           {currentStep === 5 && confirmedBooking && (
             <BookingConfirmation
               booking={confirmedBooking}
-              onJoinDemoClass={(booking) => setDemoClassroomBooking(booking)}
+              onJoinDemoClass={handleJoinDemoClass}
               onBookAnother={handleResetForNewBooking}
             />
           )}
@@ -255,7 +304,7 @@ export function App() {
         onClose={() => setIsBookingsModalOpen(false)}
         bookings={bookings}
         onCancelBooking={handleCancelBooking}
-        onJoinDemoClass={(b) => setDemoClassroomBooking(b)}
+        onJoinDemoClass={handleJoinDemoClass}
       />
 
       {/* Mentor Directory Modal */}

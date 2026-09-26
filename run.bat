@@ -1,10 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
-title TrialClass - Codeyoung Appointment Booking System
+title EduNexa - 1-on-1 Trial Class Appointment System
 color 0b
 
 echo ========================================================
-echo   TrialClass: 1-on-1 Trial Class Appointment System
+echo   EduNexa: 1-on-1 Trial Class Appointment System
+echo   Your time. Your mentor. Your class.
 echo ========================================================
 echo.
 

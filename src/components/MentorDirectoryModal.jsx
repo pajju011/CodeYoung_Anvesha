@@ -86,9 +86,18 @@ export function MentorDirectoryModal({ isOpen, onClose, onSelectMentorForBooking
               return (
                 <div key={mentor.id} className="mentor-card">
                   <div className="mentor-card-top">
-                    <div className="mentor-avatar-initials" aria-hidden="true">
-                      {initials}
-                    </div>
+                    {mentor.imageUrl ? (
+                      <img
+                        src={mentor.imageUrl}
+                        alt={mentor.name}
+                        className="mentor-avatar-img"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="mentor-avatar-initials" aria-hidden="true">
+                        {initials}
+                      </div>
+                    )}
                     <div className="mentor-main-meta">
                       <h3 className="mentor-name">{mentor.name}</h3>
                       <div className="mentor-title-role">{mentor.title}</div>

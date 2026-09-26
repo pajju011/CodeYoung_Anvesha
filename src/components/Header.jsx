@@ -19,14 +19,16 @@ export function Header({
           type="button"
           className="brand-logo-btn"
           onClick={onResetToNewBooking}
-          title="Return to Trial Class Booking"
+          title="EduNexa — Return to Booking"
         >
-          <div className="brand-icon-box">
-            <Calendar className="icon-brand" size={20} />
-          </div>
+          <img
+            src="/edunexa-logo.png"
+            alt="EduNexa"
+            className="brand-logo-image"
+          />
           <div className="brand-text-group">
-            <span className="brand-title">TrialClass</span>
-            <span className="brand-sub">Demo Scheduling System</span>
+            <span className="brand-title">EduNexa</span>
+            <span className="brand-sub">Your time. Your mentor. Your class.</span>
           </div>
         </button>
 

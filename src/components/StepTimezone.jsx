@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Globe, Clock, Search, Check, Info } from 'lucide-react';
 import { TIMEZONE_LIST, getTimezoneMeta } from '../data/timezones';
-import { formatInTimezone } from '../utils/timezoneUtils';
+import { formatInTimezone, getDstDetails } from '../utils/timezoneUtils';
 
 export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,6 +26,7 @@ export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
 
   const selectedMeta = getTimezoneMeta(selectedTimezone);
   const formattedCurrentTime = formatInTimezone(currentTime, selectedTimezone, 'time');
+  const dstDetails = getDstDetails(selectedTimezone, currentTime);
 
   return (
     <div className="card step-card">
@@ -45,6 +46,12 @@ export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
             <span className="tz-name">{selectedMeta.label}</span>
             <span className="badge badge-primary">{selectedMeta.abbr}</span>
             <span className="tz-offset">{selectedMeta.utcOffset ? `(UTC ${selectedMeta.utcOffset})` : ''}</span>
+          </div>
+          <div className="tz-dst-subtag" style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <span className={`badge ${dstDetails.isDstActive ? 'badge-primary' : 'badge-neutral'}`} style={{ fontSize: '0.75rem' }}>
+              {dstDetails.isDstActive ? '☀️ DST Active' : 'Standard Time'}
+            </span>
+            <span className="text-subtle" style={{ fontSize: '0.8125rem' }}>{dstDetails.explanation}</span>
           </div>
         </div>
         <div className="tz-clock-box">
