@@ -9,8 +9,9 @@ import { DEMO_MENTORS } from '../data/mentors';
 export function DemoClassroomModal({ booking, onClose, isStandalonePage = false }) {
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
-  const [hasWebcam, setHasWebcam] = useState(false);
-  const [webcamError, setWebcamError] = useState(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [cameraLoading, setCameraLoading] = useState(false);
+  const [cameraError, setCameraError] = useState(null);
   const [audioLevel, setAudioLevel] = useState(0);
 
   // Fallback to guarantee mentor photo, title, and bio from DEMO_MENTORS
@@ -21,10 +22,6 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
   ) || DEMO_MENTORS[0];
 
   const mentorPhoto = booking?.mentorImageUrl || matchedMentor?.imageUrl;
-
-  // Student interactive avatar & camera retry
-  const [selectedAvatar, setSelectedAvatar] = useState('initials'); // 'initials' | '🚀' | '🤖' | '🦊' | '🐱'
-  const [isRetryingCamera, setIsRetryingCamera] = useState(false);
 
   // Screen sharing state
   const [isScreenSharing, setIsScreenSharing] = useState(false);
@@ -90,131 +87,177 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
   ]);
   const [newChatText, setNewChatText] = useState('');
 
-  // Real Webcam & Audio Stream Hook
+  // Real Device Webcam & Audio Stream Hook
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+  const audioCtxRef = useRef(null);
+  const animIdRef = useRef(null);
 
-  useEffect(() => {
-    let audioCtx, analyser, dataArray, animId;
-
-    const setupAudioAnalyser = (stream) => {
+  const setupAudioAnalyser = (stream) => {
+    try {
+      if (animIdRef.current) cancelAnimationFrame(animIdRef.current);
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+        audioCtxRef.current.close().catch(() => {});
+      }
       const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (AudioContext) {
-        audioCtx = new AudioContext();
-        const source = audioCtx.createMediaStreamSource(stream);
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 64;
-        source.connect(analyser);
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
+      if (!AudioContext) return;
 
-        const measureVolume = () => {
-          if (!analyser) return;
-          analyser.getByteFrequencyData(dataArray);
-          let sum = 0;
-          for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
-          const avg = sum / dataArray.length;
-          setAudioLevel(Math.min(100, Math.round(avg * 1.8)));
-          animId = requestAnimationFrame(measureVolume);
-        };
-        measureVolume();
+      const audioCtx = new AudioContext();
+      audioCtxRef.current = audioCtx;
+      const source = audioCtx.createMediaStreamSource(stream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 64;
+      source.connect(analyser);
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      const measureVolume = () => {
+        if (!analyser) return;
+        analyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+        const avg = sum / dataArray.length;
+        setAudioLevel(Math.min(100, Math.round(avg * 1.8)));
+        animIdRef.current = requestAnimationFrame(measureVolume);
+      };
+      measureVolume();
+    } catch (e) {
+      console.warn('Audio analyser setup error:', e);
+    }
+  };
+
+  // Start Real Device Camera
+  const startDeviceCamera = async () => {
+    setCameraLoading(true);
+    setCameraError(null);
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Device camera API is not supported in this browser.');
       }
-    };
 
-    async function enableDevices() {
-      if (!cameraOn && !micOn) {
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => track.stop());
-          streamRef.current = null;
-        }
-        setHasWebcam(false);
-        return;
+      const constraints = {
+        video: {
+          width: { ideal: 1280, min: 640 },
+          height: { ideal: 720, min: 480 },
+          facingMode: 'user'
+        },
+        audio: micOn
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      // Stop existing stream tracks if different
+      if (streamRef.current && streamRef.current !== stream) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
       }
 
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: cameraOn,
-          audio: micOn,
-        });
+      streamRef.current = stream;
+      setIsCameraActive(true);
+      setCameraOn(true);
+      setCameraError(null);
 
-        streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch((e) => console.warn('Camera video play error:', e));
+      }
 
-        if (cameraOn && videoRef.current) {
-          videoRef.current.srcObject = stream;
-          setHasWebcam(true);
-        } else {
-          setHasWebcam(false);
-        }
-        setWebcamError(null);
+      if (micOn && stream.getAudioTracks().length > 0) {
+        setupAudioAnalyser(stream);
+      }
+    } catch (err) {
+      console.warn('Physical camera access error:', err);
+      setIsCameraActive(false);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setCameraError('Camera access was blocked by your browser. Please click the camera/lock icon in your browser address bar to allow camera access.');
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setCameraError('No webcam hardware was detected on your computer.');
+      } else {
+        setCameraError(err.message || 'Unable to access your device camera.');
+      }
 
-        // Audio level visualizer using Web Audio API
-        if (micOn && stream.getAudioTracks().length > 0) {
-          setupAudioAnalyser(stream);
-        }
-      } catch (err) {
-        setHasWebcam(false);
-        // If combined fails, attempt microphone-only stream
-        if (micOn) {
-          try {
-            const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            streamRef.current = audioStream;
+      // If video failed but mic was on, try capturing mic only
+      if (micOn) {
+        try {
+          const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          if (micOn && audioStream.getAudioTracks().length > 0) {
             setupAudioAnalyser(audioStream);
-          } catch {
-            // Audio permission also unavailable
           }
+        } catch {
+          // Mic fallback silent
         }
+      }
+    } finally {
+      setCameraLoading(false);
+    }
+  };
 
-        if (err.name === 'NotAllowedError') {
-          setWebcamError('Camera access not granted (using interactive avatar)');
-        } else {
-          setWebcamError('Camera device not detected (using interactive avatar)');
-        }
+  // Stop Device Camera
+  const stopDeviceCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getVideoTracks().forEach((track) => track.stop());
+    }
+    setIsCameraActive(false);
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  // Toggle Camera
+  const handleToggleCamera = () => {
+    if (cameraOn && isCameraActive) {
+      stopDeviceCamera();
+      setCameraOn(false);
+    } else {
+      setCameraOn(true);
+      startDeviceCamera();
+    }
+  };
+
+  // Toggle Mic
+  const handleToggleMic = () => {
+    const nextMic = !micOn;
+    setMicOn(nextMic);
+    if (streamRef.current) {
+      streamRef.current.getAudioTracks().forEach((track) => {
+        track.enabled = nextMic;
+      });
+      if (!nextMic) {
+        setAudioLevel(0);
       }
     }
+  };
 
-    enableDevices();
+  // Auto-attempt device camera on mount
+  useEffect(() => {
+    startDeviceCamera();
 
     return () => {
-      if (animId) cancelAnimationFrame(animId);
-      if (audioCtx) audioCtx.close();
+      if (animIdRef.current) cancelAnimationFrame(animIdRef.current);
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+        audioCtxRef.current.close().catch(() => {});
+      }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
       }
       if (screenStreamRef.current) {
         screenStreamRef.current.getTracks().forEach((t) => t.stop());
+        screenStreamRef.current = null;
       }
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
-  }, [cameraOn, micOn]);
+  }, []);
 
-  // Retry / Allow Webcam Access
-  const handleRetryWebcam = async () => {
-    setIsRetryingCamera(true);
-    setWebcamError(null);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: micOn,
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+  // Sync stream to video element when camera is active
+  useEffect(() => {
+    if (isCameraActive && streamRef.current && videoRef.current) {
+      if (videoRef.current.srcObject !== streamRef.current) {
+        videoRef.current.srcObject = streamRef.current;
+        videoRef.current.play().catch((e) => console.warn('Sync video play catch:', e));
       }
-      setHasWebcam(true);
-      setCameraOn(true);
-      setWebcamError(null);
-    } catch (err) {
-      setHasWebcam(false);
-      if (err.name === 'NotAllowedError') {
-        setWebcamError('Camera permission blocked by browser.');
-      } else {
-        setWebcamError('No camera device detected.');
-      }
-    } finally {
-      setIsRetryingCamera(false);
     }
-  };
+  }, [isCameraActive, cameraOn]);
 
   // Screen Sharing toggle using getDisplayMedia
   const handleToggleScreenShare = async () => {
@@ -543,11 +586,11 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
         <div className="classroom-main-grid">
           {/* Left: Interactive Video & Device Panel */}
           <div className="classroom-video-panel">
-            {/* 1. Student Video Feed (Real Webcam or Avatar fallback) */}
+            {/* 1. Student Video Feed (Device Live Camera Output) */}
             <div className={`video-feed-mock student-feed ${micOn && audioLevel > 18 ? 'is-speaking' : ''}`}>
               {cameraOn ? (
-                hasWebcam ? (
-                  <div className="live-video-wrapper">
+                isCameraActive ? (
+                  <div className="live-device-video-wrapper">
                     <video
                       ref={videoRef}
                       autoPlay
@@ -555,70 +598,81 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
                       muted
                       className="live-webcam-element"
                     />
-                    <span className="camera-label-overlay">{booking.studentName} (You)</span>
-                    <span className="live-cam-badge">● Live Webcam</span>
+                    {/* Live Camera Output Top Bar */}
+                    <div className="student-feed-top-bar">
+                      <span className="live-camera-badge">
+                        <span className="blinking-rec-dot"></span>
+                        LIVE CAMERA OUTPUT
+                      </span>
+                      <span className="cam-quality-tag">HD 720p</span>
+                    </div>
+
+                    {/* Live Camera Output Bottom Bar */}
+                    <div className="student-feed-bottom-bar">
+                      <span className="camera-label-overlay">
+                        {booking.studentName} (You)
+                      </span>
+                      <span className="live-cam-indicator-pill">
+                        <span className="cam-status-dot green"></span> Webcam Active
+                      </span>
+                    </div>
                   </div>
                 ) : (
-                  <div className="camera-active-view">
-                    <div className={`camera-avatar-box ${micOn && audioLevel > 18 ? 'avatar-speaking' : ''}`}>
-                      {selectedAvatar === 'initials' ? (
-                        <span className="camera-avatar-initials">
-                          {booking.studentName.charAt(0).toUpperCase()}
-                        </span>
+                  <div className="camera-prompt-view">
+                    <div className="camera-prompt-icon-box">
+                      <Video size={28} className={cameraLoading ? 'animate-pulse' : ''} />
+                    </div>
+                    <div className="camera-prompt-text">
+                      {cameraLoading ? (
+                        <p className="prompt-title">Connecting device camera...</p>
+                      ) : cameraError ? (
+                        <>
+                          <p className="prompt-title text-warning">Camera Access Required</p>
+                          <p className="prompt-desc">{cameraError}</p>
+                        </>
                       ) : (
-                        <span className="camera-avatar-emoji">{selectedAvatar}</span>
+                        <>
+                          <p className="prompt-title">Live Device Camera</p>
+                          <p className="prompt-desc">Click below to enable your live webcam feed</p>
+                        </>
                       )}
                     </div>
-                    <span className="camera-label">{booking.studentName} (Student)</span>
-                    <span className="camera-badge badge-avatar-mode">🎭 Virtual Avatar Active</span>
-                    
-                    {/* Interactive Student Avatar Picker */}
-                    <div className="avatar-quick-picker" title="Switch your virtual avatar">
-                      {[
-                        { id: 'initials', label: booking.studentName.charAt(0).toUpperCase() },
-                        { id: '🚀', label: '🚀' },
-                        { id: '🤖', label: '🤖' },
-                        { id: '🦊', label: '🦊' },
-                        { id: '🐱', label: '🐱' },
-                      ].map((av) => (
-                        <button
-                          key={av.id}
-                          type="button"
-                          className={`avatar-quick-btn ${selectedAvatar === av.id ? 'is-active' : ''}`}
-                          onClick={() => setSelectedAvatar(av.id)}
-                          title={`Switch avatar to ${av.id}`}
-                        >
-                          {av.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Camera Permission Request Button */}
                     <button
                       type="button"
-                      className="btn-retry-camera"
-                      onClick={handleRetryWebcam}
-                      disabled={isRetryingCamera}
-                      title="Request camera access from browser"
+                      className="btn btn-primary btn-sm btn-enable-device-cam"
+                      onClick={startDeviceCamera}
+                      disabled={cameraLoading}
+                      title="Activate device camera"
                     >
-                      <Video size={11} />
-                      <span>{isRetryingCamera ? 'Connecting Camera...' : 'Allow / Enable Camera'}</span>
+                      {cameraLoading ? (
+                        <>
+                          <RefreshCw size={13} className="spin-icon" />
+                          <span>Connecting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Video size={13} />
+                          <span>Enable Device Camera</span>
+                        </>
+                      )}
                     </button>
-
-                    {webcamError && <span className="webcam-hint-text">{webcamError}</span>}
+                    <span className="camera-label-overlay">{booking.studentName} (You)</span>
                   </div>
                 )
               ) : (
                 <div className="camera-disabled-view">
                   <VideoOff size={30} className="text-subtle" />
-                  <span>Camera Paused</span>
+                  <p className="prompt-title">Camera Paused</p>
+                  <span className="prompt-desc">Your video stream is turned off</span>
                   <button
                     type="button"
-                    className="btn btn-secondary btn-xs mt-1"
-                    onClick={() => setCameraOn(true)}
+                    className="btn btn-secondary btn-xs mt-2"
+                    onClick={handleToggleCamera}
                   >
-                    Turn Camera On
+                    <Video size={12} />
+                    <span>Turn Camera On</span>
                   </button>
+                  <span className="camera-label-overlay">{booking.studentName} (You)</span>
                 </div>
               )}
 
@@ -769,7 +823,7 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
               <button
                 type="button"
                 className={`device-btn ${micOn ? 'is-active' : 'is-muted'}`}
-                onClick={() => setMicOn(!micOn)}
+                onClick={handleToggleMic}
                 title={micOn ? 'Mute Microphone' : 'Unmute Microphone'}
               >
                 {micOn ? <Mic size={16} /> : <MicOff size={16} />}
@@ -778,12 +832,12 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
 
               <button
                 type="button"
-                className={`device-btn ${cameraOn ? 'is-active' : 'is-muted'}`}
-                onClick={() => setCameraOn(!cameraOn)}
-                title={cameraOn ? 'Turn Camera Off' : 'Turn Camera On'}
+                className={`device-btn ${cameraOn && isCameraActive ? 'is-active' : 'is-muted'}`}
+                onClick={handleToggleCamera}
+                title={cameraOn && isCameraActive ? 'Turn Camera Off' : 'Enable Device Camera'}
               >
-                {cameraOn ? <Video size={16} /> : <VideoOff size={16} />}
-                <span>{cameraOn ? (hasWebcam ? 'Camera On' : 'Avatar On') : 'Camera Off'}</span>
+                {cameraOn && isCameraActive ? <Video size={16} /> : <VideoOff size={16} />}
+                <span>{cameraOn && isCameraActive ? 'Camera On' : 'Camera Off'}</span>
               </button>
 
               <button
