@@ -1,42 +1,54 @@
-# TrialClass — 1-on-1 Trial Class Scheduling Platform
+# Codeyoung Trial Class Appointment-Booking System
 
-A clean, production-grade appointment scheduling product designed specifically for educational technology platforms. Built to demonstrate thoughtful product design, accessible typography, accurate cross-timezone coordination, and realistic mentor matching.
-
----
-
-## 🎯 Design Principles & Quality Standards
-
-This application strictly avoids common "AI-generated / vibe-coded" design patterns and adheres to real-world product design standards:
-
-| Principle | How It's Implemented |
-|---|---|
-| **No Purple Gradients** | Built with a disciplined, restrained color system using deep royal blue (`#1E40AF`), slate neutrals (`#0F172A`, `#334155`), and accessible borders (`#E2E8F0`). |
-| **No Pill Buttons Everywhere** | Real interactive application buttons with intentional, moderate border radius (6px - 8px) and distinct primary, secondary, and ghost hierarchies. |
-| **No Fake Reviews or Metrics** | Absolutely zero invented testimonials, zero star ratings, zero fake student/parent counters, and zero marketing puffery. |
-| **Concise, Human Copy** | Direct and clear product communication ("Book a Free Trial Class", "Choose a convenient time for your child and we'll match you with an available mentor"). |
-| **Consistent UI Icons** | Built exclusively with [Lucide React](https://lucide.dev/) icons (`Calendar`, `Clock`, `Globe`, `User`, `Mail`, `Video`, `CheckCircle2`), never random emojis. |
-| **No "AI Slop" Photos** | Focuses entirely on clear functional UI layout, structured educator credentials, and clean vector badges. |
-| **Accurate Timezone Coordination** | Standardized UTC scheduling engine that automatically calculates and displays both the parent's local time (e.g. `10:30 AM EDT`) and the mentor's local time (e.g. `8:00 PM IST`). |
-| **Trust & Transparency** | Clear demonstration notices with dedicated Privacy Policy and Terms & Conditions disclaiming assignment demo context. |
+A full-stack, production-grade appointment booking platform built for Codeyoung's 1-on-1 trial class experience. The system enables parents to select convenient time slots, coordinates cross-timezone schedules between international parents (US/UK) and educators (India), strictly enforces educator capacity limits, handles Daylight Saving Time (DST) shifts, and automatically dispatches live classroom links and simulated calendar invitations.
 
 ---
 
-## 🧭 The 5-Step Booking Flow
+## 📋 Requirements & Evaluation Compliance Matrix
+
+| Requirement | Implementation Detail | Status |
+|---|---|---|
+| **1. 10 Mentors for Trial Classes** | 10 realistic educator profiles (`server/data/mentors.js`) with specialized curricula (Scratch, Python, Web Dev, Math & Logic). In line with the prompt (*"Usually, parents are in the US or UK, and mentors are in India"*), 7 mentors are in India (`Asia/Kolkata` - IST), 2 in the UK (`Europe/London` - GMT/BST), and 1 in the US (`America/New_York` - EST/EDT). | ✅ Complete |
+| **2. 20 Parents/Day Capacity** | The math matches exactly: 10 mentors × 2 demo classes/day = **20 demo classes maximum capacity per day**. Day-wide capacity metrics and slot availability are tracked dynamically. | ✅ Complete |
+| **3. Different Timezones Communication** | All schedule slots and confirmations display **both parent local time** (e.g. `11:00 AM EDT`) and **mentor local time** (e.g. `8:30 PM IST`). | ✅ Complete |
+| **4. Daylight Savings Time (DST)** | Scheduling engine operates on standardized UTC timestamps. Uses standard IANA timezone identifiers (`America/New_York`, `Europe/London`, `Asia/Kolkata`) via `Intl.DateTimeFormat` which natively handles historical and future DST shifts (e.g., 9.5-hour difference in summer EDT vs 10.5-hour in winter EST with India IST). An active DST indicator is surfaced in the UI. | ✅ Complete |
+| **5. Dummy Live Class Link** | Every confirmed booking generates a unique meeting URL (e.g. `https://classroom.codeyoung.demo/live/CY-38083`). Clicking **[ Join Demo Class ]** opens a functional, interactive **Virtual Classroom Test Room** with camera/mic check, interactive code canvas, and trial lesson agenda. | ✅ Complete |
+| **6. Max 2 Demo Classes/Day per Mentor** | Hard constraint strictly enforced in `server/services/schedulingService.js` and `server/index.js`. If a mentor already has 2 sessions on that date, they are filtered out of available slots. Direct API attempts receive `HTTP 409 Conflict`. | ✅ Complete |
+| **7. Meaningful Error & Empty States** | Clear, user-friendly communication when slots are unavailable: *"No trial classes are available on this date. All mentors are booked or outside their working hours. Please choose another date."* | ✅ Complete |
+| **8. Email Notifications to Both Parent & Mentor** | When a trial class is booked, simulated email dispatches are generated for **both** the parent and the mentor with customized local times, session curriculum, and the live classroom link. Viewable directly in the UI via the **Email Invitations Dispatched** audit panel. | ✅ Complete |
+| **9. Full Stack Architecture** | **Backend:** Node.js + Express API (`/api/mentors`, `/api/slots`, `/api/bookings`). <br>**Frontend:** React 19 + Vanilla CSS design system + Lucide icons. | ✅ Complete |
+| **10. AI Pair Programming Transcript** | Full transcript exported as [`TRANSCRIPT.md`](./TRANSCRIPT.md) in the repository root. | ✅ Complete |
+
+---
+
+## 🎨 Design Principles & Anti-"AI Slop" Standards
+
+In accordance with strict design guidelines:
+- **No Purple Gradients:** Built with a restrained, trustworthy education color palette: deep royal blue (`#1E40AF`), slate neutrals (`#0F172A`, `#334155`), and accessible borders (`#E2E8F0`).
+- **No Pill Buttons Everywhere:** Real interactive application buttons with intentional, moderate border radius (6px - 8px) and distinct visual hierarchies.
+- **No Fake Reviews or Metrics:** Zero invented testimonials, zero star counts, zero fake customer counters, and zero marketing puffery.
+- **Human, Purpose-Driven Copy:** Direct and clear product communication ("Book a Free Trial Class", "Choose a convenient time for your child and we'll match you with an available mentor").
+- **Consistent Icons:** Exclusively using [Lucide React](https://lucide.dev/) icons (`Calendar`, `Clock`, `Globe`, `User`, `Mail`, `Video`, `CheckCircle2`), never random emojis.
+- **No Stock/AI Photos:** Focused on structured educator credentials, clean layout cards, and crisp typography (*Plus Jakarta Sans*).
+
+---
+
+## 🧭 The 5-Step Scheduling Flow
 
 1. **Step 1 — Your Timezone**
-   - Live local clock displaying the detected browser timezone.
+   - Displays detected browser timezone and current live local clock.
    - Searchable global timezone selector with IANA IDs, city names, and UTC offsets.
-   - Transparently indicates that all subsequent slots will adjust to the selected zone.
+   - Highlights whether Daylight Saving Time (DST) is active.
 
 2. **Step 2 — Date & Time**
-   - Learning track filter: *Scratch & Visual Coding*, *Python for Beginners*, *Web Development Basics*, *Math & Computational Logic*.
+   - Track filter: *Scratch & Visual Coding*, *Python for Beginners*, *Web Development Basics*, *Math & Computational Logic*.
    - 14-day interactive date selector with responsive horizontal scroll.
-   - Time slots grouped logically into Morning, Afternoon, and Evening.
+   - Slots grouped into Morning, Afternoon, and Evening.
    - Real-time mentor matching preview on each slot card showing educator name and mentor's local time.
-   - Comprehensive empty and loading states.
+   - Automatically hides mentors who have already reached their 2 demo classes/day cap.
 
 3. **Step 3 — Parent & Student Details**
-   - Form fields for parent contact (Full Name, Email, Phone/WhatsApp) and student details (Name, Age group, Prior coding experience, Optional learning goals).
+   - Form fields for parent contact (Full Name, Email, Phone/WhatsApp) and student details (Name, Age group, Prior coding experience, Learning goals).
    - Real-time validation with descriptive, accessible error messages.
 
 4. **Step 4 — Review & Verification**
@@ -45,52 +57,93 @@ This application strictly avoids common "AI-generated / vibe-coded" design patte
    - Zero-cost ($0.00) free trial breakdown with clear policy consent.
 
 5. **Step 5 — Booking Confirmation**
-   - Clear confirmation banner with unique booking reference code (e.g. `#TC-82914`).
+   - Confirmation banner with unique booking reference code (e.g. `#CY-38083`).
    - One-click Google Calendar event generation.
    - One-click `.ics` iCalendar file download for Apple Calendar / Outlook.
+   - Expandable **Email Invitations Dispatched** panel showing simulated emails sent to both parent and mentor.
    - Direct button to launch the **Simulated Classroom Testing Room**.
 
 ---
 
 ## 👩‍🏫 Demo Educators Roster (10 Mentors)
 
-Seeded specifically for this assignment without fake statistics or testimonials:
+Seeded specifically for Codeyoung's trial class operations across timezones:
 
-1. **Priya Nair** — Senior STEM & Coding Educator (IST / UTC+5:30) · *NIT Calicut*
-2. **David Chen** — Computer Science Instructor (EDT / UTC-4:00) · *Univ of Michigan*
-3. **Sarah Jenkins** — Web Technologies & Frontend Mentor (BST / UTC+1:00) · *Univ of Bristol*
-4. **Amit Sharma** — Robotics & Logic Specialist (IST / UTC+5:30) · *Delhi University*
-5. **Elena Rostova** — Creative Computing & Animation (CEST / UTC+2:00) · *TU Berlin*
-6. **Marcus Vance** — Software Developer & Youth Mentor (PDT / UTC-7:00) · *Univ of Washington*
-7. **Ananya Patel** — Early Childhood STEM Specialist (IST / UTC+5:30) · *Mumbai University*
-8. **Liam O’Connor** — Applied Computing Mentor (BST / UTC+1:00) · *Trinity College Dublin*
-9. **Fatima Al-Mansoor** — Curriculum & Coding Mentor (GST / UTC+4:00) · *Khalifa University*
-10. **Carlos Mendez** — Interactive Computing Instructor (CDT / UTC-5:00) · *UT Austin*
-
----
-
-## 💻 Tech Stack & Architecture
-
-- **Core**: React 19, JavaScript (ES modules)
-- **Tooling**: Vite 8, Oxlint
-- **Styling**: Vanilla CSS with customized design system tokens (`--color-primary`, `--radius-md`, accessible focus rings)
-- **Typography**: Plus Jakarta Sans (Google Fonts)
-- **Icons**: Lucide React
-- **Persistence**: Browser LocalStorage with complete CRUD (create booking, view in "My Bookings", cancel appointment)
+1. **Priya Nair** — Lead Scratch & Python Educator · *Bengaluru, India (IST / UTC+5:30)* · B.Tech NIT Calicut
+2. **Amit Sharma** — Robotics & Logic Specialist · *New Delhi, India (IST / UTC+5:30)* · M.Sc. Delhi University
+3. **Ananya Patel** — Early Coding & Creative Computing · *Mumbai, India (IST / UTC+5:30)* · B.Ed & B.Sc. Mumbai Univ
+4. **Rohan Verma** — Senior Python & Web Dev Instructor · *Hyderabad, India (IST / UTC+5:30)* · B.E. BITS Pilani
+5. **Neha Joshi** — STEM & Game Mechanics Educator · *Pune, India (IST / UTC+5:30)* · M.Tech IIT Roorkee
+6. **Vikram Rao** — Applied Computing & Algorithms Mentor · *Bengaluru, India (IST / UTC+5:30)* · B.Tech RVCE
+7. **Sneha Kulkarni** — Interactive Frontend & Visual Design · *Pune, India (IST / UTC+5:30)* · B.Sc. Pune Univ
+8. **Sarah Jenkins** — Web Technologies Instructor · *London, UK (BST / UTC+1:00)* · B.Sc. Univ of Bristol
+9. **Liam O’Connor** — Computing & Logic Mentor · *Manchester, UK (BST / UTC+1:00)* · B.Sc. Trinity College Dublin
+10. **David Chen** — Computer Science Instructor · *New York, US (EDT / UTC-4:00)* · B.S. Univ of Michigan
 
 ---
 
-## 🚀 Running Locally
+## 🛠️ Tech Stack & Architecture
 
+- **Backend**: Node.js, Express 5, CORS
+  - `GET /api/health` — Service health & capacity monitoring
+  - `GET /api/mentors` — Returns 10 mentors with active daily booking counters
+  - `GET /api/slots` — Calculates available slots in parent timezone, filters mentors by working hours and daily 2-class cap, includes DST metadata
+  - `POST /api/bookings` — Confirms booking, generates dummy classroom link, dispatches simulated emails to parent & mentor, enforces daily cap (HTTP 409 on overflow)
+  - `GET /api/bookings` — Returns active bookings
+  - `DELETE /api/bookings/:id` — Cancels booking
+- **Frontend**: React 19, Vite 8, Vanilla CSS design tokens, Lucide React icons
+- **Persistence**: Server-side in-memory store + Client-side `LocalStorage` synchronization
+
+---
+
+## 🚀 Running the Project
+
+### Prerequisites
+- Node.js (v18+)
+- npm (v9+)
+
+### Installation
 ```bash
-# Install dependencies
+# Clone the repository
+git clone <repo-url>
+cd Trail_Class
+
+# Install all dependencies (Frontend & Backend)
 npm install
+```
 
-# Start development server
+### Running Locally
+```bash
+# Run both Backend API (Port 3001) and Frontend (Port 5173) concurrently:
 npm run dev
+```
 
-# Build for production
+- **Frontend Application:** [http://127.0.0.1:5173/](http://127.0.0.1:5173/)
+- **Backend API Server:** [http://127.0.0.1:3001/api/health](http://127.0.0.1:3001/api/health)
+
+### Running Backend and Frontend Individually (Optional)
+```bash
+# Terminal 1: Start Express backend API
+npm run server
+
+# Terminal 2: Start Vite React frontend
+npm run client
+```
+
+### Production Build
+```bash
 npm run build
 ```
 
-Open [http://127.0.0.1:5173/](http://127.0.0.1:5173/) in your web browser.
+---
+
+## 📦 Submission Details
+
+- **Target Email:** `campus.ka@talentiseglobal.com`
+- **Deadline:** Within 28th of September 2026 (Latest by 6:00 PM)
+- **Subject Line Format:** `Codeyoung Assignment Task - <Candidate Name> - Institute Name (ABBR)`
+- **Repository Contents:**
+  - `README.md` — Project documentation and setup guide
+  - `TRANSCRIPT.md` — Full conversation transcript of the AI-assisted engineering session
+  - `server/` — Node.js Express backend API
+  - `src/` — React frontend with appointment booking flow

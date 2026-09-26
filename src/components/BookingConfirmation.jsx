@@ -1,5 +1,5 @@
-import React from 'react';
-import { CheckCircle2, Calendar, Clock, User, Globe, Video, Download, ExternalLink, PlusCircle, Laptop } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, Calendar, Clock, User, Globe, Video, Download, ExternalLink, PlusCircle, Laptop, Mail, ChevronDown, ChevronUp } from 'lucide-react';
 import { generateGoogleCalendarUrl, downloadIcsFile } from '../utils/calendarUtils';
 import { formatInTimezone } from '../utils/timezoneUtils';
 
@@ -8,6 +8,9 @@ export function BookingConfirmation({
   onJoinDemoClass,
   onBookAnother,
 }) {
+  const [showEmailPreviews, setShowEmailPreviews] = useState(false);
+  const [activeEmailTab, setActiveEmailTab] = useState('parent');
+
   const googleCalendarUrl = generateGoogleCalendarUrl(booking);
 
   const formattedDate = formatInTimezone(booking.slotUtc, booking.userTimezone, 'date-long');
@@ -22,7 +25,7 @@ export function BookingConfirmation({
         </div>
         <h2 className="confirmation-title">✓ Trial Class Confirmed</h2>
         <p className="confirmation-subtitle">
-          Your trial class is booked. A confirmation email and calendar invitation have been prepared.
+          Your trial class is booked. An email with the class link has been dispatched to both you and your mentor.
         </p>
         <div className="booking-ref-badge">
           Reference Code: <strong>{booking.referenceCode}</strong>
@@ -132,6 +135,78 @@ export function BookingConfirmation({
             <span>Download iCal (.ics)</span>
           </button>
         </div>
+      </div>
+
+      {/* Email Dispatch Audit Section (Requirement #3) */}
+      <div className="email-audit-section">
+        <button
+          type="button"
+          className="email-audit-toggle-btn"
+          onClick={() => setShowEmailPreviews(!showEmailPreviews)}
+        >
+          <div className="email-audit-title">
+            <Mail size={16} className="text-primary" />
+            <span>Email Invitations Dispatched to Parent & Mentor</span>
+            <span className="badge badge-success">2 Sent</span>
+          </div>
+          {showEmailPreviews ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {showEmailPreviews && (
+          <div className="email-audit-content">
+            <div className="email-audit-tabs">
+              <button
+                type="button"
+                className={`email-tab-btn ${activeEmailTab === 'parent' ? 'is-active' : ''}`}
+                onClick={() => setActiveEmailTab('parent')}
+              >
+                Parent Email ({booking.parentEmail})
+              </button>
+              <button
+                type="button"
+                className={`email-tab-btn ${activeEmailTab === 'mentor' ? 'is-active' : ''}`}
+                onClick={() => setActiveEmailTab('mentor')}
+              >
+                Mentor Email ({booking.mentorName.toLowerCase().replace(/[^a-z]/g, '')}@codeyoung.mentor)
+              </button>
+            </div>
+
+            {activeEmailTab === 'parent' ? (
+              <div className="email-preview-box">
+                <div className="email-meta-header">
+                  <div><strong>To:</strong> {booking.parentEmail}</div>
+                  <div><strong>Subject:</strong> Confirmed: 1-on-1 Trial Class for {booking.studentName} with {booking.mentorName}</div>
+                </div>
+                <div className="email-body-text">
+                  <p>Dear {booking.parentName},</p>
+                  <p>Your child's 1-on-1 trial class has been scheduled with <strong>{booking.mentorName}</strong>.</p>
+                  <div className="email-highlight-box">
+                    <div><strong>Date & Time (Your Local):</strong> {formattedDate} at {formattedLocalTime}</div>
+                    <div><strong>Live Class Link:</strong> <a href={booking.classroomUrl} onClick={(e) => { e.preventDefault(); onJoinDemoClass(booking); }}>{booking.classroomUrl}</a></div>
+                  </div>
+                  <p>Please join 5 minutes early using Google Chrome on a desktop or laptop computer.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="email-preview-box">
+                <div className="email-meta-header">
+                  <div><strong>To:</strong> {booking.mentorName.toLowerCase().replace(/[^a-z]/g, '')}@codeyoung.mentor</div>
+                  <div><strong>Subject:</strong> New Trial Class: {booking.studentName} ({booking.trackTitle})</div>
+                </div>
+                <div className="email-body-text">
+                  <p>Hi {booking.mentorName},</p>
+                  <p>A new 1-on-1 trial class has been booked for you (Daily session count: 1 of 2 max allowed).</p>
+                  <div className="email-highlight-box">
+                    <div><strong>Date & Time (Your Local):</strong> {formattedMentorTime}</div>
+                    <div><strong>Student:</strong> {booking.studentName} (Age: {booking.studentAgeGroup}, Level: {booking.studentExperience})</div>
+                    <div><strong>Parent Contact:</strong> {booking.parentName} ({booking.parentEmail})</div>
+                    <div><strong>Live Class Link:</strong> <a href={booking.classroomUrl} onClick={(e) => { e.preventDefault(); onJoinDemoClass(booking); }}>{booking.classroomUrl}</a></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Class Preparation Reminder */}

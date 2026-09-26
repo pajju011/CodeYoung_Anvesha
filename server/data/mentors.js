@@ -1,0 +1,178 @@
+// 10 Mentors available for trial classes
+// In line with Codeyoung specifications:
+// - Mentors are predominantly based in India (IST), with representation in UK and US.
+// - Mentors have at most 2 demo classes a day.
+// - 10 mentors * 2 classes = 20 trial classes capacity per day (matches the 20 parents/day target).
+
+export const MENTORS = [
+  {
+    id: 'mentor-priya-nair',
+    name: 'Priya Nair',
+    title: 'Lead Scratch & Python Educator',
+    education: 'B.Tech in Computer Science, NIT Calicut',
+    experienceYears: 5,
+    timezone: 'Asia/Kolkata',
+    timezoneAbbr: 'IST',
+    location: 'Bengaluru, India',
+    languages: ['English', 'Hindi'],
+    specialties: ['Scratch & Visual Coding', 'Python for Beginners', 'Game Development'],
+    targetAgeGroups: ['Ages 6–10', 'Ages 11–14'],
+    workingHours: { start: 14, end: 22 }, // 2:00 PM to 10:00 PM IST
+    workingDays: [0, 1, 2, 3, 4, 5, 6],
+    maxDailyDemos: 2,
+    bio: 'Patient and engaging instructor specializing in visual algorithms and introductory computational thinking for kids.'
+  },
+  {
+    id: 'mentor-amit-sharma',
+    name: 'Amit Sharma',
+    title: 'Robotics & Logic Specialist',
+    education: 'M.Sc. in Applied Mathematics, Delhi University',
+    experienceYears: 6,
+    timezone: 'Asia/Kolkata',
+    timezoneAbbr: 'IST',
+    location: 'New Delhi, India',
+    languages: ['English', 'Hindi'],
+    specialties: ['Math & Computational Logic', 'Scratch & Visual Coding'],
+    targetAgeGroups: ['Ages 6–10', 'Ages 11–14'],
+    workingHours: { start: 13, end: 21 }, // 1:00 PM to 9:00 PM IST
+    workingDays: [0, 1, 2, 3, 4, 5, 6],
+    maxDailyDemos: 2,
+    bio: 'Connects playful mathematical logic with game development to help students develop strong analytical instincts.'
+  },
+  {
+    id: 'mentor-ananya-patel',
+    name: 'Ananya Patel',
+    title: 'Early Coding & Creative Computing Mentor',
+    education: 'B.Ed & B.Sc in Information Technology, Mumbai University',
+    experienceYears: 4,
+    timezone: 'Asia/Kolkata',
+    timezoneAbbr: 'IST',
+    location: 'Mumbai, India',
+    languages: ['English', 'Gujarati', 'Hindi'],
+    specialties: ['Scratch & Visual Coding', 'Web Development Basics'],
+    targetAgeGroups: ['Ages 6–10', 'Ages 11–14'],
+    workingHours: { start: 14, end: 22 },
+    workingDays: [0, 1, 2, 3, 4, 5, 6],
+    maxDailyDemos: 2,
+    bio: 'Fosters curiosity in elementary students through animated storytelling and creative sprite animations.'
+  },
+  {
+    id: 'mentor-rohan-verma',
+    name: 'Rohan Verma',
+    title: 'Senior Python & Web Development Instructor',
+    education: 'B.E. in Software Engineering, BITS Pilani',
+    experienceYears: 5,
+    timezone: 'Asia/Kolkata',
+    timezoneAbbr: 'IST',
+    location: 'Hyderabad, India',
+    languages: ['English', 'Hindi'],
+    specialties: ['Python for Beginners', 'Web Development Basics'],
+    targetAgeGroups: ['Ages 11–14', 'Ages 15–17'],
+    workingHours: { start: 15, end: 23 }, // 3:00 PM to 11:00 PM IST
+    workingDays: [0, 1, 2, 3, 4, 5, 6],
+    maxDailyDemos: 2,
+    bio: 'Bridges block-based concepts to real text syntax with Python, web markup, and interactive mini-apps.'
+  },
+  {
+    id: 'mentor-neha-joshi',
+    name: 'Neha Joshi',
+    title: 'STEM & Game Mechanics Educator',
+    education: 'M.Tech in Computer Science, IIT Roorkee',
+    experienceYears: 4,
+    timezone: 'Asia/Kolkata',
+    timezoneAbbr: 'IST',
+    location: 'Pune, India',
+    languages: ['English', 'Marathi', 'Hindi'],
+    specialties: ['Scratch & Visual Coding', 'Math & Computational Logic'],
+    targetAgeGroups: ['Ages 6–10', 'Ages 11–14'],
+    workingHours: { start: 13, end: 21 },
+    workingDays: [0, 1, 2, 3, 4, 5, 6],
+    maxDailyDemos: 2,
+    bio: 'Focuses on structured thinking, pattern recognition, and game loops that keep children excited about learning.'
+  },
+  {
+    id: 'mentor-vikram-rao',
+    name: 'Vikram Rao',
+    title: 'Applied Computing & Algorithms Mentor',
+    education: 'B.Tech in Computer Science, RVCE Bengaluru',
+    experienceYears: 5,
+    timezone: 'Asia/Kolkata',
+    timezoneAbbr: 'IST',
+    location: 'Bengaluru, India',
+    languages: ['English', 'Kannada', 'Hindi'],
+    specialties: ['Python for Beginners', 'Math & Computational Logic'],
+    targetAgeGroups: ['Ages 11–14', 'Ages 15–17'],
+    workingHours: { start: 16, end: 24 }, // 4:00 PM to 12:00 AM IST (matches US mornings & afternoons)
+    workingDays: [0, 1, 2, 3, 4, 5, 6],
+    maxDailyDemos: 2,
+    bio: 'Mentors teenagers through algorithmic reasoning and text-based coding challenges.'
+  },
+  {
+    id: 'mentor-sneha-kulkarni',
+    name: 'Sneha Kulkarni',
+    title: 'Interactive Frontend & Visual Design Mentor',
+    education: 'B.Sc. in IT, Pune University',
+    experienceYears: 4,
+    timezone: 'Asia/Kolkata',
+    timezoneAbbr: 'IST',
+    location: 'Pune, India',
+    languages: ['English', 'Hindi'],
+    specialties: ['Web Development Basics', 'Scratch & Visual Coding'],
+    targetAgeGroups: ['Ages 11–14', 'Ages 15–17'],
+    workingHours: { start: 14, end: 22 },
+    workingDays: [0, 1, 2, 3, 4, 5, 6],
+    maxDailyDemos: 2,
+    bio: 'Passionate about creative frontend design and empowering students to publish their very first live web projects.'
+  },
+  {
+    id: 'mentor-sarah-jenkins',
+    name: 'Sarah Jenkins',
+    title: 'Web Technologies Instructor (UK)',
+    education: 'B.Sc. in Software Engineering, University of Bristol',
+    experienceYears: 4,
+    timezone: 'Europe/London',
+    timezoneAbbr: 'BST',
+    location: 'London, United Kingdom',
+    languages: ['English'],
+    specialties: ['Web Development Basics', 'Scratch & Visual Coding'],
+    targetAgeGroups: ['Ages 11–14', 'Ages 15–17'],
+    workingHours: { start: 9, end: 17 }, // 9:00 AM to 5:00 PM UK
+    workingDays: [1, 2, 3, 4, 5],
+    maxDailyDemos: 2,
+    bio: 'Experienced UK computing curriculum teacher guiding students through web architecture and HTML/CSS.'
+  },
+  {
+    id: 'mentor-liam-oconnor',
+    name: 'Liam O’Connor',
+    title: 'Computing & Logic Mentor (UK)',
+    education: 'B.Sc in Computing Systems, Trinity College Dublin',
+    experienceYears: 3,
+    timezone: 'Europe/London',
+    timezoneAbbr: 'BST',
+    location: 'Manchester, United Kingdom',
+    languages: ['English'],
+    specialties: ['Python for Beginners', 'Math & Computational Logic'],
+    targetAgeGroups: ['Ages 11–14', 'Ages 15–17'],
+    workingHours: { start: 10, end: 18 },
+    workingDays: [1, 2, 3, 4, 5],
+    maxDailyDemos: 2,
+    bio: 'Guides middle and high school students through their journey from block-based coding to syntax-driven languages.'
+  },
+  {
+    id: 'mentor-david-chen',
+    name: 'David Chen',
+    title: 'Computer Science Instructor (US)',
+    education: 'B.S. in Computer Science, University of Michigan',
+    experienceYears: 4,
+    timezone: 'America/New_York',
+    timezoneAbbr: 'EDT',
+    location: 'New York, United States',
+    languages: ['English', 'Mandarin'],
+    specialties: ['Python for Beginners', 'Math & Computational Logic'],
+    targetAgeGroups: ['Ages 11–14', 'Ages 15–17'],
+    workingHours: { start: 9, end: 17 }, // 9:00 AM to 5:00 PM EDT
+    workingDays: [1, 2, 3, 4, 5],
+    maxDailyDemos: 2,
+    bio: 'Focuses on structured problem-solving, algorithmic thinking, and building early real-world Python applications.'
+  }
+];
