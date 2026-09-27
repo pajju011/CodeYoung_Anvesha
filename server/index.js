@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { MENTORS } from './data/mentors.js';
 import {
   calculateAvailableSlots,
@@ -8,6 +10,10 @@ import {
   MAX_CLASSES_PER_MENTOR_PER_DAY,
   getDstDetails,
 } from './services/schedulingService.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distPath = path.join(__dirname, '../dist');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -359,8 +365,23 @@ app.get('/api/feedback', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`[Anvesha API Server] running on http://127.0.0.1:${PORT}`);
+// Serve built Vite frontend static files in production
+app.use(express.static(distPath));
+
+// Fallback: serve index.html for SPA client-side routes (non-API)
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api')) {
+    return res.sendFile(path.join(distPath, 'index.html'), (err) => {
+      if (err) {
+        res.status(200).send('Anvesha API Server running. Build the frontend with npm run build.');
+      }
+    });
+  }
+  next();
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[Anvesha Server] running on http://0.0.0.0:${PORT} (environment: ${process.env.NODE_ENV || 'development'})`);
 });
 
 export default app;
