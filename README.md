@@ -8,29 +8,19 @@ Anvesha is an intuitive 1-on-1 trial class appointment booking platform designed
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repository
+### Option A: 1-Click Launchers (Easiest)
+- **Windows:** Double-click [`run.bat`](./run.bat) (or run `run.bat` in terminal)
+- **macOS / Linux:** Run `./run.sh` in terminal
+
+*(Verifies Node.js, auto-installs dependencies if missing, starts both Express & Vite, and opens your browser)*
+
+---
+
+### Option B: Terminal Commands (Cross-Platform)
 ```bash
 git clone https://github.com/pajju011/CodeYoung_Anvesha.git
 cd CodeYoung_Anvesha
-```
 
-### 2. Run the Application
-
-#### Option A: 1-Click Launchers (Recommended)
-- **Windows:** Double-click [`run.bat`](./run.bat) or run in Command Prompt / PowerShell:
-  ```cmd
-  run.bat
-  ```
-  *(Verifies Node.js, auto-installs dependencies if missing, starts both Express & Vite, and opens your browser)*
-
-- **macOS / Linux:** Run [`run.sh`](./run.sh) in terminal:
-  ```bash
-  chmod +x run.sh
-  ./run.sh
-  ```
-
-#### Option B: Standard Terminal Commands (Cross-Platform)
-```bash
 # Install dependencies
 npm install
 
