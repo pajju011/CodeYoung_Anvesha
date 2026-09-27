@@ -12,165 +12,386 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-      /* Clean, modern, professional EdTech preloader matching Anvesha design system */
+      /* ==========================================================================
+         Anvesha Signature Brand Reveal (Executive Grade Motion System)
+         Design Ethos: Clean, inspiring, luminous EdTech — Apple/Stripe-tier craft
+         ========================================================================== */
       #app-preloader {
         position: fixed;
         inset: 0;
         z-index: 999999;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         background-color: #f8fafc;
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        /* Technical matrix grid texture */
+        background-image: radial-gradient(rgba(148, 163, 184, 0.22) 1px, transparent 1px);
+        background-size: 28px 28px;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
         color: #0f172a;
         user-select: none;
-        transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s;
-        will-change: opacity, transform;
+        overflow: hidden;
+        transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.55s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.55s;
+        will-change: opacity, transform, filter;
       }
+
       #app-preloader.preloader-fade-out {
         opacity: 0;
-        transform: scale(0.98);
+        transform: scale(1.025) translateY(-8px);
+        filter: blur(6px);
         pointer-events: none;
         visibility: hidden;
       }
-      .preloader-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
-        padding: 2.25rem 2.5rem;
+
+      /* Ambient architectural aura lighting */
+      .anv-glow-azure {
+        position: absolute;
+        top: 20%;
+        left: 25%;
+        width: 480px;
+        height: 480px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(30, 64, 175, 0.08) 0%, rgba(30, 64, 175, 0) 70%);
+        pointer-events: none;
+        filter: blur(60px);
+        animation: anvAuraShift 6s ease-in-out infinite alternate;
+      }
+
+      .anv-glow-amber {
+        position: absolute;
+        bottom: 20%;
+        right: 25%;
+        width: 440px;
+        height: 440px;
+        transform: translate(50%, 50%);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(234, 88, 12, 0.07) 0%, rgba(234, 88, 12, 0) 70%);
+        pointer-events: none;
+        filter: blur(60px);
+        animation: anvAuraShift 6s ease-in-out infinite alternate-reverse;
+      }
+
+      /* Main Stage Orchestration */
+      .anv-stage {
+        position: relative;
+        z-index: 10;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        max-width: 360px;
-        width: 88%;
-        animation: preloaderCardFadeIn 0.35s ease-out;
+        padding: 1.5rem;
       }
-      .preloader-emblem-wrap {
+
+      /* Frosted Squircle Podium with Dynamic Liquid Resonance */
+      .anv-podium-wrap {
         position: relative;
-        width: 84px;
-        height: 84px;
-        border-radius: 20px;
-        background: linear-gradient(145deg, #ffffff, #eff6ff);
-        border: 1.5px solid #dbeafe;
+        width: 124px;
+        height: 124px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 8px 20px -4px rgba(30, 64, 175, 0.12);
-        margin-bottom: 1.25rem;
+        margin-bottom: 2rem;
       }
-      .preloader-spinner-ring {
+
+      /* Harmonic Resonance Waves radiating outward */
+      .anv-ripple {
+        position: absolute;
+        inset: -12px;
+        border-radius: 36px;
+        border: 1.5px solid rgba(30, 64, 175, 0.18);
+        pointer-events: none;
+        animation: anvRippleBloom 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+      }
+
+      .anv-ripple-2 {
+        animation-delay: 1.4s;
+        border-color: rgba(234, 88, 12, 0.16);
+      }
+
+      /* Concentric Hairline Orbital */
+      .anv-orbital-spin {
         position: absolute;
         inset: -6px;
-        border-radius: 24px;
+        border-radius: 32px;
         border: 2px solid transparent;
         border-top-color: #1e40af;
         border-right-color: #f97316;
-        animation: preloaderBrandSpin 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        animation: anvOrbitalTurn 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
-      .preloader-logo-img {
-        height: 52px;
+
+      /* The Glass Podium */
+      .anv-podium {
+        position: relative;
+        z-index: 2;
+        width: 112px;
+        height: 112px;
+        border-radius: 28px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.88) 100%);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 
+          0 24px 48px -12px rgba(30, 64, 175, 0.14),
+          0 10px 20px -6px rgba(15, 23, 42, 0.05),
+          inset 0 1px 1px rgba(255, 255, 255, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      /* Specular Light Sweep Beam */
+      .anv-specular-beam {
+        position: absolute;
+        top: -60%;
+        left: -60%;
+        width: 220%;
+        height: 220%;
+        background: linear-gradient(
+          125deg,
+          transparent 40%,
+          rgba(255, 255, 255, 0.8) 50%,
+          transparent 60%
+        );
+        pointer-events: none;
+        animation: anvSpecularSweep 3.6s ease-in-out infinite;
+      }
+
+      /* Central Floating Logo */
+      .anv-logo-img {
+        position: relative;
+        z-index: 3;
+        height: 60px;
         width: auto;
         object-fit: contain;
-        animation: preloaderGentlePulse 2.4s ease-in-out infinite alternate;
+        filter: drop-shadow(0 6px 12px rgba(30, 64, 175, 0.15));
+        animation: anvEmblemHover 3s ease-in-out infinite alternate;
       }
-      .preloader-brand-title {
-        font-size: 1.375rem;
-        font-weight: 700;
+
+      /* The Guiding Star Spark of Achievement */
+      .anv-sparkle-star {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        z-index: 4;
+        width: 14px;
+        height: 14px;
+        color: #f59e0b;
+        filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.9));
+        animation: anvStarPulse 1.8s ease-in-out infinite;
+      }
+
+      /* Typography */
+      .anv-title-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1.25rem;
+      }
+
+      .anv-title {
+        font-size: 1.5rem;
+        font-weight: 800;
         color: #0f172a;
-        letter-spacing: -0.015em;
-        line-height: 1.2;
-        margin: 0 0 0.25rem 0;
-      }
-      .preloader-brand-sub {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #64748b;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        margin: 0 0 1.25rem 0;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.1;
       }
-      .preloader-progress-track {
-        width: 160px;
-        height: 4px;
-        background: #f1f5f9;
-        border-radius: 99px;
+
+      /* Kinetic 3-Beat Narrative Stepper (Discover ✦ Connect ✦ Learn) */
+      .anv-stepper {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+        border-radius: 999px;
+        padding: 0.35rem 0.85rem;
+        backdrop-filter: blur(8px);
+      }
+
+      .anv-step-pill {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        transition: all 0.4s ease;
+      }
+
+      .anv-step-1 {
+        background-color: #eff6ff;
+        color: #1e40af;
+        animation: anvBeat1 2.4s ease-in-out infinite;
+      }
+
+      .anv-step-divider {
+        color: #cbd5e1;
+        font-size: 0.65rem;
+      }
+
+      .anv-step-2 {
+        color: #0284c7;
+        animation: anvBeat2 2.4s ease-in-out infinite;
+      }
+
+      .anv-step-3 {
+        color: #ea580c;
+        animation: anvBeat3 2.4s ease-in-out infinite;
+      }
+
+      /* Hairline Laser Progress Track */
+      .anv-laser-track {
+        width: 220px;
+        height: 3px;
+        background: #e2e8f0;
+        border-radius: 999px;
         overflow: hidden;
         position: relative;
+        margin-top: 1.5rem;
         margin-bottom: 0.875rem;
-        border: 1px solid #e2e8f0;
       }
-      .preloader-progress-bar {
+
+      .anv-laser-beam {
         position: absolute;
         top: 0;
         left: 0;
         height: 100%;
-        width: 45%;
-        background: linear-gradient(90deg, #1e40af, #2563eb 50%, #f97316 100%);
-        border-radius: 99px;
-        animation: preloaderProgressMove 1.6s ease-in-out infinite;
+        width: 65px;
+        background: linear-gradient(90deg, transparent, #1e40af 45%, #ea580c 85%, #fbbf24 100%);
+        border-radius: 999px;
+        filter: drop-shadow(0 0 5px rgba(234, 88, 12, 0.5));
+        animation: anvLaserGlide 1.7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
       }
-      .preloader-status-pill {
-        display: inline-flex;
+
+      .anv-caption {
+        font-size: 0.8125rem;
+        color: #64748b;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        display: flex;
         align-items: center;
         gap: 0.5rem;
-        font-size: 0.8125rem;
-        font-weight: 500;
-        color: #64748b;
       }
-      .preloader-dot {
-        width: 7px;
-        height: 7px;
+
+      .anv-live-dot {
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
-        background-color: #2563eb;
-        animation: preloaderDotPulse 1.4s ease-in-out infinite;
+        background-color: #1e40af;
+        box-shadow: 0 0 8px rgba(30, 64, 175, 0.6);
+        animation: anvDotFlicker 1.8s ease-in-out infinite;
       }
-      @keyframes preloaderBrandSpin {
+
+      /* Core Keyframes */
+      @keyframes anvRippleBloom {
+        0% { transform: scale(0.92); opacity: 0.7; }
+        100% { transform: scale(1.42); opacity: 0; }
+      }
+
+      @keyframes anvOrbitalTurn {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-      @keyframes preloaderGentlePulse {
-        0% { transform: scale(0.97); }
-        100% { transform: scale(1.03); }
+
+      @keyframes anvEmblemHover {
+        0% { transform: translateY(-2px) scale(0.99); }
+        100% { transform: translateY(3px) scale(1.02); }
       }
-      @keyframes preloaderProgressMove {
-        0% { left: -45%; }
-        100% { left: 100%; }
+
+      @keyframes anvSpecularSweep {
+        0%, 30% { transform: translate(-100%, -100%) rotate(25deg); }
+        60%, 100% { transform: translate(100%, 100%) rotate(25deg); }
       }
-      @keyframes preloaderDotPulse {
-        0%, 100% { transform: scale(0.85); opacity: 0.6; }
-        50% { transform: scale(1.2); opacity: 1; background-color: #f97316; }
+
+      @keyframes anvStarPulse {
+        0%, 100% { transform: scale(0.9) rotate(0deg); opacity: 0.7; filter: drop-shadow(0 0 4px #f59e0b); }
+        50% { transform: scale(1.3) rotate(45deg); opacity: 1; filter: drop-shadow(0 0 10px #fbbf24); }
       }
-      @keyframes preloaderCardFadeIn {
-        from { opacity: 0; transform: translateY(8px); }
-        to { opacity: 1; transform: translateY(0); }
+
+      @keyframes anvAuraShift {
+        0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.95); }
+        100% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.1); }
+      }
+
+      @keyframes anvLaserGlide {
+        0% { left: -70px; }
+        100% { left: 230px; }
+      }
+
+      @keyframes anvDotFlicker {
+        0%, 100% { transform: scale(0.9); opacity: 0.6; }
+        50% { transform: scale(1.25); opacity: 1; background-color: #ea580c; box-shadow: 0 0 10px rgba(234, 88, 12, 0.8); }
+      }
+
+      /* Kinetic Narrative Beat Keyframes */
+      @keyframes anvBeat1 {
+        0%, 100% { opacity: 0.6; transform: scale(0.98); }
+        33% { opacity: 1; transform: scale(1.06); background-color: #dbeafe; }
+      }
+
+      @keyframes anvBeat2 {
+        0%, 100% { opacity: 0.6; transform: scale(0.98); }
+        66% { opacity: 1; transform: scale(1.06); background-color: #e0f2fe; }
+      }
+
+      @keyframes anvBeat3 {
+        0%, 100% { opacity: 0.6; transform: scale(0.98); }
+        90% { opacity: 1; transform: scale(1.06); background-color: #ffedd5; }
       }
     </style>
   </head>
   <body>
-    <!-- Clean, branded EdTech preloader matching Anvesha theme -->
+    <!-- Anvesha Signature Brand Reveal Preloader -->
     <div id="app-preloader" aria-hidden="true">
-      <div class="preloader-card">
-        <div class="preloader-emblem-wrap">
-          <div class="preloader-spinner-ring"></div>
-          <img
-            src="/anvesha-icon.png"
-            alt="Anvesha"
-            class="preloader-logo-img"
-          />
+      <div class="anv-glow-azure"></div>
+      <div class="anv-glow-amber"></div>
+
+      <div class="anv-stage">
+        <!-- Floating Glass Podium with Energy Ripples -->
+        <div class="anv-podium-wrap">
+          <div class="anv-ripple"></div>
+          <div class="anv-ripple anv-ripple-2"></div>
+          <div class="anv-orbital-spin"></div>
+
+          <div class="anv-podium">
+            <div class="anv-specular-beam"></div>
+            <img
+              src="/anvesha-icon.png"
+              alt="Anvesha Emblem"
+              class="anv-logo-img"
+            />
+            <!-- Golden 4-point star representing student achievement -->
+            <svg class="anv-sparkle-star" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+            </svg>
+          </div>
         </div>
 
-        <h2 class="preloader-brand-title">Anvesha</h2>
-        <div class="preloader-brand-sub">Discover. Connect. Learn.</div>
-
-        <div class="preloader-progress-track">
-          <div class="preloader-progress-bar"></div>
+        <!-- Typography & Kinetic 3-Beat Stepper -->
+        <div class="anv-title-group">
+          <h2 class="anv-title">Anvesha</h2>
+          <div class="anv-stepper">
+            <span class="anv-step-pill anv-step-1">Discover</span>
+            <span class="anv-step-divider">✦</span>
+            <span class="anv-step-pill anv-step-2">Connect</span>
+            <span class="anv-step-divider">✦</span>
+            <span class="anv-step-pill anv-step-3">Learn</span>
+          </div>
         </div>
 
-        <div class="preloader-status-pill">
-          <span class="preloader-dot"></span>
-          <span>Preparing 1-on-1 trial class system...</span>
+        <!-- Hairline Laser Progress Track -->
+        <div class="anv-laser-track">
+          <div class="anv-laser-beam"></div>
+        </div>
+
+        <div class="anv-caption">
+          <span class="anv-live-dot"></span>
+          <span>Preparing 1-on-1 trial class experience</span>
         </div>
       </div>
     </div>
@@ -178,15 +399,15 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
-      // Safety auto-dismissal
+      // Executive safety auto-dismissal
       window.addEventListener('load', function() {
         setTimeout(function() {
           var p = document.getElementById('app-preloader');
           if (p && !p.classList.contains('preloader-fade-out')) {
             p.classList.add('preloader-fade-out');
-            setTimeout(function() { if (p && p.parentNode) p.remove(); }, 500);
+            setTimeout(function() { if (p && p.parentNode) p.remove(); }, 600);
           }
-        }, 1400);
+        }, 1500);
       });
     </script>
   </body>
