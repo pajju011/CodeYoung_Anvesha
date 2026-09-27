@@ -61,10 +61,22 @@ export function App() {
   const isClassroomTab = urlParams.get('view') === 'classroom';
   const classroomId = urlParams.get('id');
 
-  // Load existing bookings on mount
+  // Load existing bookings on mount & dismiss initial preloader smoothly
   useEffect(() => {
     const stored = getStoredBookings();
     setBookings(stored);
+
+    const timer = setTimeout(() => {
+      const preloader = document.getElementById('app-preloader');
+      if (preloader) {
+        preloader.classList.add('preloader-fade-out');
+        setTimeout(() => {
+          if (preloader.parentNode) preloader.remove();
+        }, 700);
+      }
+    }, 800);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleJoinDemoClass = (booking) => {

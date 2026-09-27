@@ -10,10 +10,184 @@
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      /* Clean, modern, professional EdTech preloader matching Anvesha design system */
+      #app-preloader {
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8fafc;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        color: #0f172a;
+        user-select: none;
+        transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s;
+        will-change: opacity, transform;
+      }
+      #app-preloader.preloader-fade-out {
+        opacity: 0;
+        transform: scale(0.98);
+        pointer-events: none;
+        visibility: hidden;
+      }
+      .preloader-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
+        padding: 2.25rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        max-width: 360px;
+        width: 88%;
+        animation: preloaderCardFadeIn 0.35s ease-out;
+      }
+      .preloader-emblem-wrap {
+        position: relative;
+        width: 84px;
+        height: 84px;
+        border-radius: 20px;
+        background: linear-gradient(145deg, #ffffff, #eff6ff);
+        border: 1.5px solid #dbeafe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px -4px rgba(30, 64, 175, 0.12);
+        margin-bottom: 1.25rem;
+      }
+      .preloader-spinner-ring {
+        position: absolute;
+        inset: -6px;
+        border-radius: 24px;
+        border: 2px solid transparent;
+        border-top-color: #1e40af;
+        border-right-color: #f97316;
+        animation: preloaderBrandSpin 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      .preloader-logo-img {
+        height: 52px;
+        width: auto;
+        object-fit: contain;
+        animation: preloaderGentlePulse 2.4s ease-in-out infinite alternate;
+      }
+      .preloader-brand-title {
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: -0.015em;
+        line-height: 1.2;
+        margin: 0 0 0.25rem 0;
+      }
+      .preloader-brand-sub {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin: 0 0 1.25rem 0;
+      }
+      .preloader-progress-track {
+        width: 160px;
+        height: 4px;
+        background: #f1f5f9;
+        border-radius: 99px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 0.875rem;
+        border: 1px solid #e2e8f0;
+      }
+      .preloader-progress-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 45%;
+        background: linear-gradient(90deg, #1e40af, #2563eb 50%, #f97316 100%);
+        border-radius: 99px;
+        animation: preloaderProgressMove 1.6s ease-in-out infinite;
+      }
+      .preloader-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: #64748b;
+      }
+      .preloader-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: #2563eb;
+        animation: preloaderDotPulse 1.4s ease-in-out infinite;
+      }
+      @keyframes preloaderBrandSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes preloaderGentlePulse {
+        0% { transform: scale(0.97); }
+        100% { transform: scale(1.03); }
+      }
+      @keyframes preloaderProgressMove {
+        0% { left: -45%; }
+        100% { left: 100%; }
+      }
+      @keyframes preloaderDotPulse {
+        0%, 100% { transform: scale(0.85); opacity: 0.6; }
+        50% { transform: scale(1.2); opacity: 1; background-color: #f97316; }
+      }
+      @keyframes preloaderCardFadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
   </head>
   <body>
+    <!-- Clean, branded EdTech preloader matching Anvesha theme -->
+    <div id="app-preloader" aria-hidden="true">
+      <div class="preloader-card">
+        <div class="preloader-emblem-wrap">
+          <div class="preloader-spinner-ring"></div>
+          <img
+            src="/anvesha-icon.png"
+            alt="Anvesha"
+            class="preloader-logo-img"
+          />
+        </div>
+
+        <h2 class="preloader-brand-title">Anvesha</h2>
+        <div class="preloader-brand-sub">Discover. Connect. Learn.</div>
+
+        <div class="preloader-progress-track">
+          <div class="preloader-progress-bar"></div>
+        </div>
+
+        <div class="preloader-status-pill">
+          <span class="preloader-dot"></span>
+          <span>Preparing 1-on-1 trial class system...</span>
+        </div>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Safety auto-dismissal
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var p = document.getElementById('app-preloader');
+          if (p && !p.classList.contains('preloader-fade-out')) {
+            p.classList.add('preloader-fade-out');
+            setTimeout(function() { if (p && p.parentNode) p.remove(); }, 500);
+          }
+        }, 1400);
+      });
+    </script>
   </body>
 </html>
