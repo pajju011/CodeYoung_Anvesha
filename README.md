@@ -1,6 +1,8 @@
 # Anvesha
 
-A 1-on-1 trial class appointment booking platform connecting parents and mentors across global timezones.
+> **Discover. Connect. Learn.**
+
+Anvesha is an intuitive 1-on-1 trial class appointment booking platform designed to streamline scheduling between international parents (US/UK) and educators in India. Parents can select a specialized learning track (Scratch, Python, Web Dev, Math & Logic), choose a convenient time slot in their local timezone, get automatically paired with a certified mentor, receive instant calendar invites & live classroom links, and attend an interactive virtual demo session.
 
 ---
 
@@ -14,18 +16,33 @@ cd CodeYoung_Anvesha
 
 ### 2. Run the Application
 
-**1-Click Launch:**
-- **Windows:** Double-click `run.bat` (or run `run.bat` in terminal)
-- **macOS / Linux:** Run `./run.sh`
+#### Option A: 1-Click Launchers (Recommended)
+- **Windows:** Double-click [`run.bat`](./run.bat) or run in Command Prompt / PowerShell:
+  ```cmd
+  run.bat
+  ```
+  *(Verifies Node.js, auto-installs dependencies if missing, starts both Express & Vite, and opens your browser)*
 
-**Or via npm:**
+- **macOS / Linux:** Run [`run.sh`](./run.sh) in terminal:
+  ```bash
+  chmod +x run.sh
+  ./run.sh
+  ```
+
+#### Option B: Standard Terminal Commands (Cross-Platform)
 ```bash
+# Install dependencies
 npm install
+
+# Start both Express backend and React frontend
 npm run dev
 ```
 
-- **Frontend:** [http://localhost:5173](http://localhost:5173)
-- **Backend API:** [http://localhost:3001](http://localhost:3001)
+---
+
+### 🌐 Access Links
+- **Frontend App:** [http://localhost:5173](http://localhost:5173)
+- **Backend API:** [http://localhost:3001/api/health](http://localhost:3001/api/health)
 - **Demo Classroom:** [http://localhost:5173/?view=classroom&id=demo_session](http://localhost:5173/?view=classroom&id=demo_session)
 
 ---
