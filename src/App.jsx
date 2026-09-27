@@ -13,7 +13,6 @@ import { MyBookingsModal } from './components/MyBookingsModal';
 import { MentorDirectoryModal } from './components/MentorDirectoryModal';
 import { PolicyModal } from './components/PolicyModal';
 import { Footer } from './components/Footer';
-import { FloatingSupportWidget } from './components/FloatingSupportWidget';
 
 import { detectUserTimezone, getTimezoneMeta } from './data/timezones';
 import { LEARNING_TRACKS } from './data/subjects';
@@ -302,7 +301,6 @@ export function App() {
       <Footer
         onOpenPrivacy={() => setPolicyModalType('privacy')}
         onOpenTerms={() => setPolicyModalType('terms')}
-        onOpenMentors={() => setIsMentorsModalOpen(true)}
       />
 
       {/* Header Quick Timezone Modal */}
@@ -353,9 +351,6 @@ export function App() {
         type={policyModalType}
         onClose={() => setPolicyModalType(null)}
       />
-
-      {/* Persistent Help & Academic Counseling Support Widget */}
-      <FloatingSupportWidget />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function Footer({ onOpenPrivacy, onOpenTerms, onOpenMentors }) {
+export function Footer({ onOpenPrivacy, onOpenTerms }) {
   return (
     <footer className="site-footer">
       <div className="container">
@@ -30,14 +30,6 @@ export function Footer({ onOpenPrivacy, onOpenTerms, onOpenMentors }) {
               onClick={onOpenTerms}
             >
               Terms & Conditions
-            </button>
-            <span className="footer-link-sep">·</span>
-            <button
-              type="button"
-              className="footer-link-btn"
-              onClick={onOpenMentors}
-            >
-              Demo Mentors
             </button>
           </div>
         </div>

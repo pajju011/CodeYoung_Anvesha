@@ -3045,97 +3045,6 @@
   flex-wrap: wrap;
 }
 
-/* Responsive Media Queries */
-@media (max-width: 768px) {
-  .site-header-inner {
-    height: auto;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: flex-start;
-  }
-
-  .header-nav {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .hero-headline {
-    font-size: 1.75rem;
-  }
-
-  .hero-highlights {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
-  }
-
-  .stepper-label {
-    display: none;
-  }
-
-  .tz-current-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .tz-clock-box {
-    align-items: flex-start;
-  }
-
-  .tz-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-sections-grid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-
-  .review-highlight-row,
-  .review-schedule-grid,
-  .review-attendees-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .conf-detail-row {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
-  }
-
-  .classroom-main-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .calendar-actions-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .calendar-buttons-group {
-    width: 100%;
-  }
-
-  .calendar-buttons-group .btn {
-    flex: 1;
-  }
-
-  .site-footer-inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-}
-
 /* ============================================================
    UX ENHANCEMENTS: TIMEZONE AUTO-DETECT & COMPARISON BAR
    ============================================================ */
@@ -3953,21 +3862,615 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 640px) {
+/* ==========================================================================
+   PRODUCTION RESPONSIVE ARCHITECTURE (MULTIPLE DEVICE PARAMETERS)
+   Breakpoints:
+     1. Large Tablets & Small Laptops (<= 1024px)
+     2. Standard Tablets & Large Handhelds (<= 768px)
+     3. Standard Mobile Phones (<= 540px)
+     4. Ultra-Compact Mobile / Small Screens (<= 380px)
+     5. Mobile Landscape Mode (max-height: 500px and orientation: landscape)
+     6. Touch Device Optimizations (@media (hover: none))
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. TABLETS & SMALL LAPTOPS (<= 1024px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 100%;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .tz-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .classroom-main-grid {
+    grid-template-columns: 240px 1fr;
+    gap: 1rem;
+  }
+
+  .mentors-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .review-summary-box {
+    padding: 1.25rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. STANDARD TABLETS & PHABLETS (<= 768px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Header & Navigation */
+  .site-header-inner {
+    height: auto;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .header-nav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .header-link-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8125rem;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding: 2.25rem 0 1.5rem;
+  }
+
+  .hero-headline {
+    font-size: 1.75rem;
+    line-height: 1.2;
+  }
+
+  .hero-supporting {
+    font-size: 0.9375rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-highlights {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .hero-highlight-item {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+  }
+
+  /* Stepper */
+  .stepper-nav {
+    margin: 1.25rem auto 1.25rem auto;
+  }
+
+  .stepper-label {
+    display: none;
+  }
+
+  .stepper-list::before {
+    top: 16px;
+    left: 16px;
+    right: 16px;
+  }
+
+  .stepper-mobile-current {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    margin-top: 0.65rem;
+    color: var(--color-primary);
+  }
+
+  /* Step 1: Timezone */
+  .tz-current-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+    padding: 1rem;
+  }
+
+  .tz-clock-box {
+    align-self: flex-start;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(30, 64, 175, 0.08);
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .tz-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Step 2: Date & Time */
+  .slots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.625rem;
+  }
+
+  .track-pill-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Step 3: Details Form */
+  .form-sections-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* Step 4: Review */
+  .review-highlight-row,
+  .review-schedule-grid,
+  .review-attendees-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Step 5: Confirmation */
+  .conf-detail-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 0.65rem 0;
+  }
+
+  .calendar-actions-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .calendar-buttons-group {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .calendar-buttons-group .btn {
+    width: 100%;
+  }
+
   .prep-checklist-grid {
     grid-template-columns: 1fr;
   }
-  .floating-support-container {
-    bottom: 1rem;
-    right: 1rem;
+
+  /* Step Actions Nav */
+  .step-actions {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
   }
-  .floating-support-panel {
-    width: calc(100vw - 2rem);
-    height: 480px;
-    right: 0;
+
+  .step-actions .btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
   }
-  .returning-user-notice {
+
+  /* Classroom Layout */
+  .classroom-main-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .classroom-video-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.625rem;
+  }
+
+  .video-feed-mock {
+    min-height: 130px;
+    height: auto;
+  }
+
+  .live-device-video-wrapper {
+    height: 130px;
+  }
+
+  .classroom-dialog.is-standalone {
+    border-radius: 0;
+    min-height: 100vh;
+  }
+
+  .classroom-standalone-page {
+    padding: 0;
+  }
+
+  /* Modals */
+  .modal-overlay {
+    padding: 0.75rem;
+  }
+
+  .modal-dialog {
+    max-height: 94vh;
+  }
+
+  .modal-header {
+    padding: 1rem 1.25rem;
+  }
+
+  .modal-body {
+    padding: 1.25rem;
+  }
+
+  /* Footer */
+  .site-footer-inner {
     flex-direction: column;
     align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. STANDARD SMARTPHONES (<= 540px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 540px) {
+  /* iOS Safari Auto-Zoom Prevention on Form Inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  .container {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .card {
+    padding: 1rem 0.875rem;
+    border-radius: var(--radius-md);
+  }
+
+  /* Header Branding */
+  .brand-logo-btn {
+    padding: 0.15rem 0.25rem;
+    gap: 0.5rem;
+  }
+
+  .brand-logo-image {
+    height: 36px;
+  }
+
+  .brand-title {
+    font-size: 1.05rem;
+  }
+
+  .brand-sub {
+    font-size: 0.625rem;
+  }
+
+  .header-nav {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .tz-pill-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .header-link-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .header-mentor-count {
+    display: none;
+  }
+
+  /* Timezone Selection */
+  .tz-auto-detect-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .tz-detect-left {
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+
+  .tz-reset-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.4rem;
+  }
+
+  .tz-comparison-alert {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .tz-compare-arrow {
+    transform: rotate(90deg);
+    margin: 0.15rem 0;
+  }
+
+  /* Date Picker Chips */
+  .date-scroll-container {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0.5rem;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .date-chip {
+    width: 76px;
+    padding: 0.5rem 0.25rem;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  .date-chip-num {
+    font-size: 1.125rem;
+  }
+
+  .date-chip-avail-badge {
+    font-size: 0.625rem;
+    padding: 0.1rem 0.3rem;
+  }
+
+  /* Time Slots */
+  .slots-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .slot-card {
+    padding: 0.6rem 0.5rem;
+    min-height: 48px;
+  }
+
+  .slot-time {
+    font-size: 0.8125rem;
+  }
+
+  .slot-meta {
+    font-size: 0.6875rem;
+  }
+
+  /* Mentor Trust Card */
+  .slot-mentor-trust-card {
+    padding: 0.85rem;
+  }
+
+  .mentor-trust-header {
+    gap: 0.65rem;
+  }
+
+  .mentor-trust-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .mentor-trust-name {
+    font-size: 0.875rem;
+  }
+
+  .mentor-trust-badge {
+    font-size: 0.625rem;
+  }
+
+  .mentor-trust-quote {
+    font-size: 0.75rem;
+  }
+
+  /* Returning User Notice */
+  .returning-user-notice {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding: 0.75rem;
+  }
+
+  .returning-user-clear-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Confirmation */
+  .confirmation-header {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .confirmation-title {
+    font-size: 1.35rem;
+  }
+
+  .email-cal-sync-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .email-cal-btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .email-sync-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .email-preview-box {
+    font-size: 0.8125rem;
+    word-break: break-word;
+    overflow-x: auto;
+  }
+
+  /* Floating Support Drawer */
+  .floating-support-container {
+    bottom: 1rem;
+    right: 0.875rem;
+    z-index: 1000;
+  }
+
+  .floating-support-btn {
+    padding: 0.6rem 0.95rem;
+    font-size: 0.8125rem;
+  }
+
+  .floating-support-panel {
+    position: fixed;
+    top: auto;
+    bottom: 4.5rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    max-width: none;
+    height: calc(100vh - 6rem);
+    max-height: 520px;
+    border-radius: var(--radius-lg);
+  }
+
+  /* Classroom Video Feed Stacking */
+  .classroom-video-panel {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .classroom-bottom-controls {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: center;
+    padding: 0.5rem;
+  }
+
+  .classroom-ctrl-btn {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ULTRA-COMPACT / FOLDABLE DEVICES (<= 380px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 380px) {
+  .track-pill-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .slots-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .date-chip {
+    width: 70px;
+    padding: 0.45rem 0.2rem;
+  }
+
+  .stepper-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 0.6875rem;
+  }
+
+  .stepper-list::before {
+    top: 14px;
+  }
+
+  .hero-headline {
+    font-size: 1.45rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. MOBILE LANDSCAPE ERGONOMICS (max-height: 500px and landscape)
+   -------------------------------------------------------------------------- */
+@media (max-height: 500px) and (orientation: landscape) {
+  .site-header {
+    position: static;
+  }
+
+  .hero-section {
+    padding: 1.25rem 0 0.75rem;
+  }
+
+  .floating-support-panel {
+    height: calc(100vh - 2rem);
+    max-height: none;
+    bottom: 1rem;
+  }
+
+  .modal-dialog {
+    max-height: 96vh;
+  }
+
+  .classroom-video-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .video-feed-mock {
+    min-height: 100px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. TOUCH PARAMETER OPTIMIZATIONS (Hover: None)
+   -------------------------------------------------------------------------- */
+@media (hover: none) {
+  /* Prevent sticky hover backgrounds on mobile tap */
+  .btn:hover,
+  .slot-card:hover,
+  .date-chip:hover,
+  .track-pill-btn:hover {
+    background-color: var(--color-surface);
+  }
+
+  /* Clear active feedback for touch */
+  .btn:active,
+  .slot-card:active,
+  .date-chip:active,
+  .track-pill-btn:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-primary);
+  }
+
+  .btn-primary:active {
+    background-color: var(--color-primary-active);
   }
 }

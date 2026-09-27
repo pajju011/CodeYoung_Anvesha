@@ -40,6 +40,10 @@ export function BookingStepper({ currentStep, onStepClick, maxReachedStep }) {
           );
         })}
       </ol>
+      <div className="stepper-mobile-current" aria-live="polite">
+        <span className="mobile-step-num">Step {currentStep} of 4:</span>
+        <strong className="mobile-step-title">{steps[currentStep - 1]?.label}</strong>
+      </div>
     </nav>
   );
 }
