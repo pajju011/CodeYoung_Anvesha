@@ -276,6 +276,64 @@ app.delete('/api/bookings/:id', (req, res) => {
   });
 });
 
+/**
+ * In-memory store for trial class session feedbacks
+ */
+let feedbackStore = [];
+
+/**
+ * POST /api/feedback
+ * Records parent/student feedback after leaving or completing a trial class
+ */
+app.post('/api/feedback', (req, res) => {
+  const {
+    bookingId,
+    referenceCode,
+    mentorName,
+    studentName,
+    rating = 5,
+    pace = 'Just Right',
+    highlights = [],
+    continueInterest = 'Yes',
+    comments = '',
+  } = req.body;
+
+  const newFeedback = {
+    id: `fb_${Date.now()}`,
+    bookingId: bookingId || 'session_general',
+    referenceCode: referenceCode || 'CY-GENERAL',
+    mentorName: mentorName || 'Assigned Mentor',
+    studentName: studentName || 'Student',
+    rating: Number(rating) || 5,
+    pace,
+    highlights,
+    continueInterest,
+    comments,
+    submittedAt: new Date().toISOString(),
+  };
+
+  feedbackStore.push(newFeedback);
+  console.log(`[Feedback Received] Ref #${newFeedback.referenceCode}: ${newFeedback.rating} stars for ${newFeedback.mentorName} from ${newFeedback.studentName}`);
+
+  res.json({
+    success: true,
+    message: 'Thank you for your feedback! Our academic counseling team has received your review.',
+    feedback: newFeedback,
+  });
+});
+
+/**
+ * GET /api/feedback
+ * Returns collected session feedbacks
+ */
+app.get('/api/feedback', (req, res) => {
+  res.json({
+    success: true,
+    count: feedbackStore.length,
+    feedbacks: feedbackStore,
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`[Anvesha API Server] running on http://127.0.0.1:${PORT}`);
 });

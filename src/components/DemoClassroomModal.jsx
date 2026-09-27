@@ -5,8 +5,10 @@ import {
   ExternalLink, ArrowLeft, Maximize2, Minimize2, Sparkles, RefreshCw, Hand
 } from 'lucide-react';
 import { DEMO_MENTORS } from '../data/mentors';
+import { ClassFeedbackModal } from './ClassFeedbackModal';
 
 export function DemoClassroomModal({ booking, onClose, isStandalonePage = false }) {
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -504,6 +506,23 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
     if (onClose) onClose();
   };
 
+  const handleRequestLeave = () => {
+    setShowFeedbackModal(true);
+  };
+
+  const handleFinalExit = () => {
+    setShowFeedbackModal(false);
+    if (isStandalonePage) {
+      if (window.opener) {
+        window.close();
+      } else {
+        window.location.href = '/';
+      }
+    } else if (onClose) {
+      onClose();
+    }
+  };
+
   if (!booking) return null;
 
   const mentorTimeDisplay = booking.mentorTimeStr && booking.mentorTimeStr !== booking.mentorTimezoneAbbr
@@ -546,13 +565,8 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
             <button
               type="button"
               className="btn btn-secondary btn-sm"
-              onClick={() => {
-                if (window.opener) {
-                  window.close();
-                } else {
-                  window.location.href = '/';
-                }
-              }}
+              onClick={handleRequestLeave}
+              title="Leave classroom and give session feedback"
             >
               <ArrowLeft size={14} />
               <span>Back to Portal</span>
@@ -561,8 +575,9 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
             <button
               type="button"
               className="btn btn-ghost btn-sm modal-close-btn"
-              onClick={onClose}
-              aria-label="Close classroom preview"
+              onClick={handleRequestLeave}
+              aria-label="Close classroom and submit feedback"
+              title="Leave classroom"
             >
               <X size={20} />
             </button>
@@ -1069,19 +1084,9 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
         <button
           type="button"
           className="btn btn-secondary"
-          onClick={() => {
-            if (isStandalonePage) {
-              if (window.opener) {
-                window.close();
-              } else {
-                window.location.href = '/';
-              }
-            } else if (onClose) {
-              onClose();
-            }
-          }}
+          onClick={handleRequestLeave}
         >
-          {isStandalonePage ? 'Leave Classroom & Return' : 'Leave Classroom'}
+          {isStandalonePage ? 'Leave Classroom & Give Feedback' : 'Leave Classroom'}
         </button>
       </div>
     </div>
@@ -1100,6 +1105,14 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
   return (
     <>
       {modalMarkup}
+
+      {/* Post-Session Feedback Modal */}
+      <ClassFeedbackModal
+        isOpen={showFeedbackModal}
+        booking={booking}
+        onClose={handleFinalExit}
+        isStandalonePage={isStandalonePage}
+      />
 
       {/* Enlarged Mentor Screen Spotlight Theater */}
       {isMentorLarge && (

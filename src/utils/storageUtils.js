@@ -59,3 +59,26 @@ export function getReturningUserProfile() {
   }
 }
 
+const FEEDBACK_STORAGE_KEY = 'trial_class_feedbacks_v1';
+
+export function saveClassFeedback(feedback) {
+  try {
+    const existing = getStoredFeedbacks();
+    const updated = [feedback, ...existing];
+    localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(updated));
+    return updated;
+  } catch (err) {
+    console.error('Failed to save feedback:', err);
+    return [];
+  }
+}
+
+export function getStoredFeedbacks() {
+  try {
+    const raw = localStorage.getItem(FEEDBACK_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+

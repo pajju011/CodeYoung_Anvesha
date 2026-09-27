@@ -4474,3 +4474,307 @@
     background-color: var(--color-primary-active);
   }
 }
+
+/* ============================================================
+   POST-SESSION TRIAL CLASS FEEDBACK MODAL
+   ============================================================ */
+.feedback-modal-overlay {
+  z-index: 2000;
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+.feedback-dialog {
+  max-width: 580px;
+  width: 100%;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
+  background: var(--color-surface);
+  animation: feedbackSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes feedbackSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.feedback-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.15rem 1.5rem;
+  background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+  color: #ffffff;
+}
+
+.feedback-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.feedback-brand-icon {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+.feedback-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  display: inline-block;
+}
+
+.feedback-title-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.feedback-modal-header .modal-close-btn {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.feedback-modal-header .modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.feedback-modal-body {
+  padding: 1.5rem;
+  max-height: calc(90vh - 100px);
+  overflow-y: auto;
+}
+
+.feedback-intro-banner {
+  background: rgba(37, 99, 235, 0.06);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  color: #1e3a8a;
+  line-height: 1.45;
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.feedback-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.feedback-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+/* Star Rating Controls */
+.star-rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.star-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 8px;
+  transition: transform var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star-btn:hover {
+  transform: scale(1.18);
+}
+
+.star-btn:active {
+  transform: scale(0.95);
+}
+
+.rating-verbal-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #d97706;
+  min-height: 1.25rem;
+}
+
+/* Chips Grid */
+.feedback-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.feedback-chip-btn {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.45rem 0.85rem;
+  border-radius: 9999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  line-height: 1.25;
+}
+
+.feedback-chip-btn:hover {
+  border-color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.feedback-chip-btn.is-selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  font-weight: 600;
+}
+
+/* Radio List */
+.feedback-radio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.feedback-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  color: var(--color-text-main);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.feedback-radio-item:hover {
+  background: #f8fafc;
+  border-color: var(--color-primary);
+}
+
+.feedback-radio-item input[type="radio"] {
+  accent-color: var(--color-primary);
+  width: 16px;
+  height: 16px;
+}
+
+.feedback-textarea {
+  resize: vertical;
+  min-height: 75px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  padding: 0.65rem 0.85rem;
+}
+
+/* Action Buttons */
+.feedback-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Success Card */
+.feedback-success-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1rem;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.feedback-success-icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.feedback-success-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 0.5rem;
+}
+
+.feedback-success-desc {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  max-width: 440px;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.feedback-summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  color: #334155;
+  margin-bottom: 1.75rem;
+}
+
+.feedback-chip-sep {
+  color: #cbd5e1;
+}
+
+.feedback-success-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 540px) {
+  .feedback-modal-body {
+    padding: 1rem;
+  }
+  .feedback-actions-row {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+  }
+  .feedback-actions-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .star-btn {
+    padding: 0.15rem;
+  }
+}
