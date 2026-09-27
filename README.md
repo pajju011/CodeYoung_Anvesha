@@ -76,6 +76,13 @@ npm run dev
 
 ---
 
+## 📄 License
+
+This project is open-source and available under the [MIT License](./LICENSE).
+
+---
+
 ## 👨‍💻 Author
 
 Developed by **[Prajwal R Poojary](https://github.com/pajju011)**
+
