@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, User, Globe, Video, Download, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Calendar, Clock, User, Globe, Video, Download, Trash2, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
 import { downloadIcsFile } from '../utils/calendarUtils';
 import { formatInTimezone } from '../utils/timezoneUtils';
 
@@ -9,10 +9,19 @@ export function MyBookingsModal({
   bookings,
   onCancelBooking,
   onJoinDemoClass,
+  onClearAllBookings,
 }) {
   const [cancellingId, setCancellingId] = useState(null);
+  const [isConfirmingClearAll, setIsConfirmingClearAll] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleExecuteClearAll = () => {
+    if (onClearAllBookings) {
+      onClearAllBookings();
+    }
+    setIsConfirmingClearAll(false);
+  };
 
   return (
     <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="my-bookings-title">
@@ -35,6 +44,15 @@ export function MyBookingsModal({
         </div>
 
         <div className="modal-body">
+          {bookings.length > 0 && (
+            <div className="privacy-device-note">
+              <ShieldCheck size={16} className="text-success flex-shrink-0" />
+              <span>
+                <strong>Shared Device Privacy:</strong> These sessions are stored locally in your browser. Personal details are never visible or prefilled for other users.
+              </span>
+            </div>
+          )}
+
           {bookings.length === 0 ? (
             <div className="empty-state" style={{ padding: '2rem 1rem' }}>
               <Calendar size={36} className="text-subtle" />
@@ -157,7 +175,44 @@ export function MyBookingsModal({
           )}
         </div>
 
-        <div className="modal-footer">
+        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div>
+            {bookings.length > 0 && onClearAllBookings && (
+              isConfirmingClearAll ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.8125rem', color: 'var(--color-danger)' }}>
+                    Wipe all saved bookings from this browser?
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-secondary"
+                    style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)' }}
+                    onClick={handleExecuteClearAll}
+                  >
+                    Yes, Wipe Data
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => setIsConfirmingClearAll(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-xs text-subtle"
+                  onClick={() => setIsConfirmingClearAll(true)}
+                  title="Wipe saved bookings from this browser on shared devices"
+                >
+                  <Trash2 size={13} />
+                  <span>Clear Browser History (Shared PC)</span>
+                </button>
+              )
+            )}
+          </div>
+
           <button
             type="button"
             className="btn btn-secondary"

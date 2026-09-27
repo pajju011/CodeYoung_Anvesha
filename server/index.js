@@ -241,13 +241,38 @@ app.post('/api/bookings', (req, res) => {
 
 /**
  * GET /api/bookings
- * Returns all active bookings
+ * Returns bookings. If email query param provided, returns customer's bookings.
+ * Otherwise returns sanitized slots to protect personal contact details from other users.
  */
 app.get('/api/bookings', (req, res) => {
+  const { email } = req.query;
+  if (email) {
+    const userBookings = bookingsStore.filter(
+      (b) => b.parentEmail?.toLowerCase() === email.trim().toLowerCase()
+    );
+    return res.json({
+      success: true,
+      count: userBookings.length,
+      bookings: userBookings,
+    });
+  }
+
+  // Sanitized view: protect customer privacy from other visitors
+  const sanitized = bookingsStore.map((b) => ({
+    id: b.id,
+    referenceCode: b.referenceCode,
+    slotUtc: b.slotUtc,
+    slotLabel: b.slotLabel,
+    mentorId: b.mentorId,
+    mentorName: b.mentorName,
+    trackTitle: b.trackTitle,
+    status: b.status,
+  }));
+
   res.json({
     success: true,
-    count: bookingsStore.length,
-    bookings: bookingsStore,
+    count: sanitized.length,
+    bookings: sanitized,
   });
 });
 

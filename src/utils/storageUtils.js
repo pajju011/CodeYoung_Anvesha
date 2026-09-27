@@ -4,7 +4,8 @@ export function getStoredBookings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
   } catch (err) {
     console.error('Failed to parse stored bookings:', err);
     return [];
@@ -40,23 +41,19 @@ export function cancelStoredBooking(bookingId) {
   }
 }
 
-export function getReturningUserProfile() {
+export function clearAllStoredBookings() {
   try {
-    const bookings = getStoredBookings();
-    const valid = bookings.find((b) => b.parentEmail && b.studentName);
-    if (!valid) return null;
-    return {
-      parentName: valid.parentName || '',
-      parentEmail: valid.parentEmail || '',
-      parentPhone: valid.parentPhone || '',
-      studentName: valid.studentName || '',
-      studentAge: valid.studentAgeGroup || valid.studentAge || '9-11',
-      studentExperience: valid.studentExperience || 'beginner',
-      studentGoals: valid.studentGoals || '',
-    };
-  } catch {
-    return null;
+    localStorage.removeItem(STORAGE_KEY);
+    return [];
+  } catch (err) {
+    console.error('Failed to clear bookings:', err);
+    return [];
   }
+}
+
+// Neutralized for user data privacy across shared sessions
+export function getReturningUserProfile() {
+  return null;
 }
 
 const FEEDBACK_STORAGE_KEY = 'trial_class_feedbacks_v1';
@@ -76,7 +73,9 @@ export function saveClassFeedback(feedback) {
 export function getStoredFeedbacks() {
   try {
     const raw = localStorage.getItem(FEEDBACK_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
   } catch {
     return [];
   }

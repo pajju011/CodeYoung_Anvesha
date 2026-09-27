@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, User, Mail, Phone, BookOpen, AlertCircle, HelpCircle, Sparkles, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, User, Mail, Phone, BookOpen, AlertCircle, HelpCircle, ShieldCheck } from 'lucide-react';
 import { LEARNING_TRACKS } from '../data/subjects';
 
 export function StepDetails({
   formData,
   onChangeForm,
   selectedTrackId,
-  isReturningUser = false,
-  onResetForm,
   onBack,
   onNext,
 }) {
@@ -79,33 +77,18 @@ export function StepDetails({
         </p>
       </div>
 
-      {/* Returning User Auto-Fill Banner */}
-      {isReturningUser && (
-        <div className="returning-user-notice">
-          <div className="returning-user-left">
-            <Sparkles size={18} className="returning-user-icon flex-shrink-0" />
-            <div>
-              <div className="returning-user-title">
-                Welcome back! We've pre-filled your details from your previous trial session
-              </div>
-              <div className="returning-user-sub">
-                Review the information below or update it if booking for a sibling or with different contact details.
-              </div>
-            </div>
+      {/* Customer Data Privacy Assurance Banner */}
+      <div className="privacy-security-notice" role="note" aria-label="Customer privacy guarantee">
+        <ShieldCheck size={20} className="privacy-security-icon flex-shrink-0" />
+        <div className="privacy-security-content">
+          <div className="privacy-security-title">
+            Private & Confidential Booking Session
           </div>
-          {onResetForm && (
-            <button
-              type="button"
-              className="btn btn-secondary btn-xs returning-user-clear-btn"
-              onClick={onResetForm}
-              title="Clear pre-filled fields to enter fresh information"
-            >
-              <RotateCcw size={12} />
-              <span>Clear & Start Fresh</span>
-            </button>
-          )}
+          <div className="privacy-security-sub">
+            Your contact details are strictly confidential, securely handled, and never exposed or pre-filled for any other visitor or browser session.
+          </div>
         </div>
-      )}
+      </div>
 
       <div className="form-sections-grid">
         {/* Parent / Guardian Section */}
@@ -122,6 +105,7 @@ export function StepDetails({
             <input
               id="parentName"
               type="text"
+              autoComplete="off"
               className={`form-input ${errors.parentName && touched.parentName ? 'is-invalid' : ''}`}
               placeholder="e.g. John Doe"
               value={formData.parentName || ''}
@@ -146,6 +130,7 @@ export function StepDetails({
             <input
               id="parentEmail"
               type="email"
+              autoComplete="off"
               className={`form-input ${errors.parentEmail && touched.parentEmail ? 'is-invalid' : ''}`}
               placeholder="e.g. parent@example.com"
               value={formData.parentEmail || ''}
@@ -170,6 +155,7 @@ export function StepDetails({
             <input
               id="parentPhone"
               type="tel"
+              autoComplete="off"
               className={`form-input ${errors.parentPhone && touched.parentPhone ? 'is-invalid' : ''}`}
               placeholder="e.g. +1 (555) 234-5678 or +91 98765 43210"
               value={formData.parentPhone || ''}
@@ -201,6 +187,7 @@ export function StepDetails({
             <input
               id="studentName"
               type="text"
+              autoComplete="off"
               className={`form-input ${errors.studentName && touched.studentName ? 'is-invalid' : ''}`}
               placeholder="e.g. Maya Doe"
               value={formData.studentName || ''}

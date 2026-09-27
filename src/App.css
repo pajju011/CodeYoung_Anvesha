@@ -4778,3 +4778,54 @@
     padding: 0.15rem;
   }
 }
+
+/* ==========================================================================
+   Customer Data Privacy & Isolation Styles
+   ========================================================================== */
+
+.privacy-security-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.06) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  border-radius: var(--radius-md, 10px);
+  padding: 0.875rem 1.125rem;
+  margin-bottom: 1.5rem;
+}
+
+.privacy-security-icon {
+  color: #10b981;
+  margin-top: 0.125rem;
+}
+
+.privacy-security-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.privacy-security-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #065f46;
+}
+
+.privacy-security-sub {
+  font-size: 0.8125rem;
+  color: #374151;
+  line-height: 1.45;
+}
+
+.privacy-device-note {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.65rem 0.875rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
