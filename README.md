@@ -32,28 +32,45 @@
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Running the Application
 
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm (v9 or higher)
 
-### 1. Clone the repository
+### Option A: 1-Click Launchers (Easiest)
+
+- **Windows:** Double-click [`run.bat`](./run.bat) or run in Command Prompt / PowerShell:
+  ```cmd
+  run.bat
+  ```
+  *(Verifies Node.js, auto-installs dependencies if missing, starts both Express backend & Vite frontend, and automatically opens your browser)*
+
+- **macOS / Linux:** Run [`run.sh`](./run.sh) in your terminal:
+  ```bash
+  chmod +x run.sh
+  ./run.sh
+  ```
+
+---
+
+### Option B: Standard Terminal Commands (All Platforms)
+
 ```bash
+# 1. Clone the repository
 git clone https://github.com/pajju011/CodeYoung_Anvesha.git
 cd CodeYoung_Anvesha
-```
 
-### 2. Install dependencies
-```bash
+# 2. Install dependencies
 npm install
-```
 
-### 3. Start development server
-```bash
+# 3. Start development server
 npm run dev
 ```
-This runs both the Express backend API (`http://localhost:3001`) and the Vite React frontend (`http://localhost:5173`) concurrently.
+
+- **Frontend UI:** [http://localhost:5173/](http://localhost:5173/)
+- **Backend API:** [http://localhost:3001/api/health](http://localhost:3001/api/health)
+- **Direct Live Classroom Preview:** [http://localhost:5173/?view=classroom&id=demo_session](http://localhost:5173/?view=classroom&id=demo_session)
 
 ---
 
