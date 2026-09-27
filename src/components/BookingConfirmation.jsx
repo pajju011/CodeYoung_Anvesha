@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Calendar, Clock, User, Globe, Video, Download, ExternalLink, PlusCircle, Laptop, Mail, ChevronDown, ChevronUp, CheckSquare, Wifi, Mic, Sparkles } from 'lucide-react';
+import { CheckCircle2, Calendar, Clock, User, Globe, Video, Download, ExternalLink, PlusCircle, Laptop, Mail, ChevronDown, ChevronUp, CheckSquare, Wifi, Mic, Sparkles, Copy, Check } from 'lucide-react';
 import { generateGoogleCalendarUrl, downloadIcsFile } from '../utils/calendarUtils';
 import { formatInTimezone } from '../utils/timezoneUtils';
 
@@ -10,6 +10,19 @@ export function BookingConfirmation({
 }) {
   const [showEmailPreviews, setShowEmailPreviews] = useState(false);
   const [activeEmailTab, setActiveEmailTab] = useState('parent');
+  const [copiedKey, setCopiedKey] = useState(null);
+
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const parentLink = booking.parentClassroomUrl || `${origin}/?view=classroom&id=${booking.id}&role=parent`;
+  const mentorLink = booking.mentorClassroomUrl || `${origin}/?view=classroom&id=${booking.id}&role=mentor`;
+
+  const copyToClipboard = (url, key) => {
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    }).catch(() => {});
+  };
 
   const googleCalendarUrl = generateGoogleCalendarUrl(booking);
 
@@ -99,7 +112,7 @@ export function BookingConfirmation({
               title="Open virtual classroom in a new tab"
             >
               <Video size={15} />
-              <span>Join Demo Class</span>
+              <span>Join Class</span>
               <ExternalLink size={13} style={{ marginLeft: 3 }} />
             </button>
             <span className="class-link-hint">Opens live classroom in a new tab</span>
@@ -194,7 +207,21 @@ export function BookingConfirmation({
                   <p>Your child's 1-on-1 trial class has been scheduled with <strong>{booking.mentorName}</strong>.</p>
                   <div className="email-highlight-box">
                     <div><strong>Date & Time (Your Local):</strong> {formattedDate} at {formattedLocalTime}</div>
-                    <div><strong>Live Class Link:</strong> <a href={booking.classroomUrl} onClick={(e) => { e.preventDefault(); onJoinDemoClass(booking); }}>{booking.classroomUrl}</a></div>
+                    <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <strong>Live Class Link:</strong>
+                      <a href={parentLink} onClick={(e) => { e.preventDefault(); onJoinDemoClass(booking, 'parent'); }} style={{ wordBreak: 'break-all' }}>
+                        {parentLink}
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-xs"
+                        style={{ padding: '0.15rem 0.4rem', fontSize: '0.7rem' }}
+                        onClick={() => copyToClipboard(parentLink, 'parent-email')}
+                        title="Copy parent link"
+                      >
+                        {copiedKey === 'parent-email' ? '✓ Copied' : 'Copy'}
+                      </button>
+                    </div>
                   </div>
 
                   {/* Instant Calendar Syncing in Email (Requirement #3) */}
@@ -239,7 +266,21 @@ export function BookingConfirmation({
                     <div><strong>Date & Time (Your Local):</strong> {formattedMentorTime}</div>
                     <div><strong>Student:</strong> {booking.studentName} (Age: {booking.studentAgeGroup}, Level: {booking.studentExperience})</div>
                     <div><strong>Parent Contact:</strong> {booking.parentName} ({booking.parentEmail})</div>
-                    <div><strong>Live Class Link:</strong> <a href={booking.classroomUrl} onClick={(e) => { e.preventDefault(); onJoinDemoClass(booking); }}>{booking.classroomUrl}</a></div>
+                    <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <strong>Mentor Class Link:</strong>
+                      <a href={mentorLink} onClick={(e) => { e.preventDefault(); onJoinDemoClass(booking, 'mentor'); }} style={{ wordBreak: 'break-all' }}>
+                        {mentorLink}
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-xs"
+                        style={{ padding: '0.15rem 0.4rem', fontSize: '0.7rem' }}
+                        onClick={() => copyToClipboard(mentorLink, 'mentor-email')}
+                        title="Copy mentor link"
+                      >
+                        {copiedKey === 'mentor-email' ? '✓ Copied' : 'Copy'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -60,6 +60,19 @@ export function formatInTimezone(dateInput, timeZone, formatType = 'full') {
       }).format(date);
     }
 
+    if (formatType === 'date-ymd') {
+      const parts = getCachedFormatter('en-US', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).formatToParts(date);
+      const y = parts.find((p) => p.type === 'year')?.value;
+      const m = parts.find((p) => p.type === 'month')?.value;
+      const d = parts.find((p) => p.type === 'day')?.value;
+      return `${y}-${m}-${d}`;
+    }
+
     if (formatType === 'full') {
       return getCachedFormatter('en-US', {
         timeZone,
@@ -206,13 +219,17 @@ export function clearSlotsCache() {
  */
 export function getMentorBookingsCountOnDate(mentorId, mentorTimezone, targetDateUtc, bookedSlots = []) {
   if (!bookedSlots || bookedSlots.length === 0) return 0;
-  const targetDateInMentorZone = formatInTimezone(targetDateUtc, mentorTimezone, 'date-short');
+  const targetDateInMentorZone = formatInTimezone(targetDateUtc, mentorTimezone, 'date-ymd');
 
   return bookedSlots.filter((b) => {
     if (b.status === 'cancelled') return false;
-    if (b.mentorId !== mentorId) return false;
+    const isMentorMatch =
+      b.mentorId === mentorId ||
+      (b.mentorName && mentorId && mentorId.toLowerCase().includes(b.mentorName.toLowerCase().split(' ')[0])) ||
+      (b.mentorId && mentorId && b.mentorId.toLowerCase() === mentorId.toLowerCase());
+    if (!isMentorMatch) return false;
 
-    const bookingDateInMentorZone = formatInTimezone(new Date(b.slotUtc), mentorTimezone, 'date-short');
+    const bookingDateInMentorZone = formatInTimezone(new Date(b.slotUtc), mentorTimezone, 'date-ymd');
     return bookingDateInMentorZone === targetDateInMentorZone;
   }).length;
 }

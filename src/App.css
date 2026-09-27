@@ -5317,3 +5317,73 @@
   color: #1e293b;
   margin-bottom: 1rem;
 }
+
+/* ==========================================================================
+   Requirement 3: Working Dummy Links for Parents & Mentors
+   ========================================================================== */
+.booking-dummy-links-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md, 10px);
+  padding: 0.85rem 1rem;
+  margin-top: 1rem;
+}
+
+.dummy-links-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 0.65rem;
+}
+
+.dummy-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.8125rem;
+}
+
+.dummy-link-row:last-child {
+  margin-bottom: 0;
+}
+
+.dummy-link-role {
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  min-width: 110px;
+  font-size: 0.8125rem;
+}
+
+.dummy-link-action-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.dummy-link-input {
+  flex: 1;
+  height: 30px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #475569;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.dummy-link-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
