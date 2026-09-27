@@ -1,107 +1,53 @@
-# Anvesha — 1-on-1 Trial Class Booking Platform
+# Anvesha
 
-> **Discover. Connect. Learn.**  
-> An intuitive, cross-timezone appointment scheduling web app connecting parents and mentors for live 1-on-1 trial classes.
+A 1-on-1 trial class appointment booking platform connecting parents and mentors across global timezones.
 
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+---
+
+## 🚀 Quick Start
+
+### 1-Click Launch
+- **Windows:** Double-click `run.bat` (or run `run.bat` in terminal)
+- **macOS / Linux:** Run `./run.sh`
+
+### Manual Run
+```bash
+npm install
+npm run dev
+```
+
+- **Frontend:** [http://localhost:5173](http://localhost:5173)
+- **Backend API:** [http://localhost:3001](http://localhost:3001)
+- **Demo Classroom:** [http://localhost:5173/?view=classroom&id=demo_session](http://localhost:5173/?view=classroom&id=demo_session)
 
 ---
 
 ## ✨ Features
 
-- **🌐 Cross-Timezone Scheduling & DST Support:** Seamlessly coordinates slots between parents (US, UK, etc.) and educators in India (IST). Displays dual-timezone clock indicators with automatic Daylight Saving Time adjustment.
-- **👩‍🏫 Smart Mentor Assignment & Capacity Limits:** Balances booking distribution across 10 specialized educators, strictly enforcing a hard cap of 2 demo classes per mentor per day (20 sessions/day capacity).
-- **🖥️ Interactive Virtual Classroom:** Built-in trial room with webcam/mic self-checks, collaborative whiteboard, live Python code runner, and curriculum agenda.
-- **🔒 Customer Privacy & Data Protection:** Strict session isolation preventing personal contact details from being exposed or pre-filled on shared devices, with 1-click browser history purge.
-- **📅 Instant Calendar Sync:** One-click Google Calendar integration and `.ics` download for Apple Calendar and Outlook.
-- **⭐ Post-Session Feedback System:** Interactive feedback modal capturing ratings, session pace, and comments immediately upon leaving or completing a session.
-- **📱 Responsive Design:** Polished, touch-friendly UI optimized across mobile, tablet, and desktop viewports.
+- **Cross-Timezone & DST:** Dual clock displays for parents (US/UK) and mentors (India) with automated Daylight Saving Time adjustment.
+- **Mentor Capacity Management:** Auto-matching across 10 mentors, strictly capped at 2 sessions/day per mentor (20 sessions/day max).
+- **Virtual Classroom:** Interactive trial room with mic/camera test, collaborative whiteboard, live code runner, and chat.
+- **Privacy & Data Protection:** Strict session isolation preventing customer contact details from being exposed or pre-filled on shared devices.
+- **Calendar & Notifications:** Instant Google Calendar sync, `.ics` iCal download, and simulated email dispatches.
+- **Session Feedback:** Built-in post-class review and rating system.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React 19, Vite, Vanilla CSS Design System, Lucide React Icons
-- **Backend:** Node.js, Express 5, CORS
-- **Storage:** In-memory backend persistent store with client-side session fallback
-- **Deployment:** Vercel (`vercel.json`), Render (`render.yaml`), Railway (`Procfile`)
+- **Frontend:** React 19, Vite, Vanilla CSS, Lucide Icons
+- **Backend:** Node.js, Express 5
+- **Deployment:** Vercel
 
 ---
 
-## 🚀 Running the Application
+## 📡 API Endpoints
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm (v9 or higher)
-
-### Option A: 1-Click Launchers (Easiest)
-
-- **Windows:** Double-click [`run.bat`](./run.bat) or run in Command Prompt / PowerShell:
-  ```cmd
-  run.bat
-  ```
-  *(Verifies Node.js, auto-installs dependencies if missing, starts both Express backend & Vite frontend, and automatically opens your browser)*
-
-- **macOS / Linux:** Run [`run.sh`](./run.sh) in your terminal:
-  ```bash
-  chmod +x run.sh
-  ./run.sh
-  ```
-
----
-
-### Option B: Standard Terminal Commands (All Platforms)
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/pajju011/CodeYoung_Anvesha.git
-cd CodeYoung_Anvesha
-
-# 2. Install dependencies
-npm install
-
-# 3. Start development server
-npm run dev
-```
-
-- **Frontend UI:** [http://localhost:5173/](http://localhost:5173/)
-- **Backend API:** [http://localhost:3001/api/health](http://localhost:3001/api/health)
-- **Direct Live Classroom Preview:** [http://localhost:5173/?view=classroom&id=demo_session](http://localhost:5173/?view=classroom&id=demo_session)
-
----
-
-## 📡 API Overview
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/health` | Health status and capacity metrics |
-| `GET` | `/api/mentors` | 10 certified mentors and remaining daily quota |
-| `GET` | `/api/slots` | Available slots calculated in parent's timezone |
-| `POST` | `/api/bookings` | Confirm booking, assign mentor, and dispatch emails |
-| `GET` | `/api/bookings` | Bookings list (customer PII sanitized) |
-| `DELETE` | `/api/bookings/:id` | Cancel a booking |
-| `POST` | `/api/feedback` | Submit session review and rating |
-
----
-
-## 🚢 Deployment
-
-### Vercel (Frontend & Serverless API)
-1. Import repository on [Vercel](https://vercel.com).
-2. Framework Preset: **Vite**
-3. Build Command: `npm run build`
-4. Output Directory: `dist`
-5. Click **Deploy**.
-
-### Render / Railway (Full-Stack Container)
-- **Render:** Connect GitHub repo; detected automatically via `render.yaml`.
-- **Railway / Heroku:** Reads `Procfile` (`web: npm start`).
-- **Build Command:** `npm install && npm run build`
-- **Start Command:** `npm start`
+- `GET /api/mentors` — List mentors and remaining daily quota
+- `GET /api/slots` — Available slots by date and timezone
+- `POST /api/bookings` — Confirm booking, assign mentor, and dispatch emails
+- `DELETE /api/bookings/:id` — Cancel a booking
+- `POST /api/feedback` — Submit session review and rating
 
 ---
 
