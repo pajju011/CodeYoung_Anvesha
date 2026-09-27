@@ -39,3 +39,23 @@ export function cancelStoredBooking(bookingId) {
     return [];
   }
 }
+
+export function getReturningUserProfile() {
+  try {
+    const bookings = getStoredBookings();
+    const valid = bookings.find((b) => b.parentEmail && b.studentName);
+    if (!valid) return null;
+    return {
+      parentName: valid.parentName || '',
+      parentEmail: valid.parentEmail || '',
+      parentPhone: valid.parentPhone || '',
+      studentName: valid.studentName || '',
+      studentAge: valid.studentAgeGroup || valid.studentAge || '9-11',
+      studentExperience: valid.studentExperience || 'beginner',
+      studentGoals: valid.studentGoals || '',
+    };
+  } catch {
+    return null;
+  }
+}
+

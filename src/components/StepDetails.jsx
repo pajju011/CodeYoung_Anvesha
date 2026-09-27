@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, User, Mail, Phone, BookOpen, AlertCircle, HelpCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, User, Mail, Phone, BookOpen, AlertCircle, HelpCircle, Sparkles, RotateCcw } from 'lucide-react';
 import { LEARNING_TRACKS } from '../data/subjects';
 
 export function StepDetails({
   formData,
   onChangeForm,
   selectedTrackId,
+  isReturningUser = false,
+  onResetForm,
   onBack,
   onNext,
 }) {
@@ -76,6 +78,34 @@ export function StepDetails({
           Provide your contact details so your mentor can prepare age-appropriate materials and share the live classroom link.
         </p>
       </div>
+
+      {/* Returning User Auto-Fill Banner */}
+      {isReturningUser && (
+        <div className="returning-user-notice">
+          <div className="returning-user-left">
+            <Sparkles size={18} className="returning-user-icon flex-shrink-0" />
+            <div>
+              <div className="returning-user-title">
+                Welcome back! We've pre-filled your details from your previous trial session
+              </div>
+              <div className="returning-user-sub">
+                Review the information below or update it if booking for a sibling or with different contact details.
+              </div>
+            </div>
+          </div>
+          {onResetForm && (
+            <button
+              type="button"
+              className="btn btn-secondary btn-xs returning-user-clear-btn"
+              onClick={onResetForm}
+              title="Clear pre-filled fields to enter fresh information"
+            >
+              <RotateCcw size={12} />
+              <span>Clear & Start Fresh</span>
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="form-sections-grid">
         {/* Parent / Guardian Section */}

@@ -13,10 +13,11 @@ import { MyBookingsModal } from './components/MyBookingsModal';
 import { MentorDirectoryModal } from './components/MentorDirectoryModal';
 import { PolicyModal } from './components/PolicyModal';
 import { Footer } from './components/Footer';
+import { FloatingSupportWidget } from './components/FloatingSupportWidget';
 
 import { detectUserTimezone, getTimezoneMeta } from './data/timezones';
 import { LEARNING_TRACKS } from './data/subjects';
-import { getStoredBookings, saveBooking, cancelStoredBooking } from './utils/storageUtils';
+import { getStoredBookings, saveBooking, cancelStoredBooking, getReturningUserProfile } from './utils/storageUtils';
 import { submitBooking, cancelBookingApi } from './services/api';
 
 export function App() {
@@ -32,15 +33,22 @@ export function App() {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState(null);
 
-  // Form Details
-  const [formData, setFormData] = useState({
-    parentName: '',
-    parentEmail: '',
-    parentPhone: '',
-    studentName: '',
-    studentAge: '9-11',
-    studentExperience: 'beginner',
-    studentGoals: '',
+  // Form Details & Returning User pre-fill
+  const [isReturningUser, setIsReturningUser] = useState(() => Boolean(getReturningUserProfile()));
+  const [formData, setFormData] = useState(() => {
+    const returningProfile = getReturningUserProfile();
+    if (returningProfile) {
+      return returningProfile;
+    }
+    return {
+      parentName: '',
+      parentEmail: '',
+      parentPhone: '',
+      studentName: '',
+      studentAge: '9-11',
+      studentExperience: 'beginner',
+      studentGoals: '',
+    };
   });
 
   // Stored Bookings and Confirmed state
@@ -72,6 +80,19 @@ export function App() {
 
   const handleFormChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleResetForm = () => {
+    setFormData({
+      parentName: '',
+      parentEmail: '',
+      parentPhone: '',
+      studentName: '',
+      studentAge: '9-11',
+      studentExperience: 'beginner',
+      studentGoals: '',
+    });
+    setIsReturningUser(false);
   };
 
   const goToStep = (step) => {
@@ -247,6 +268,8 @@ export function App() {
               formData={formData}
               onChangeForm={handleFormChange}
               selectedTrackId={selectedTrackId}
+              isReturningUser={isReturningUser}
+              onResetForm={handleResetForm}
               onBack={() => goToStep(2)}
               onNext={() => goToStep(4)}
             />
@@ -330,6 +353,9 @@ export function App() {
         type={policyModalType}
         onClose={() => setPolicyModalType(null)}
       />
+
+      {/* Persistent Help & Academic Counseling Support Widget */}
+      <FloatingSupportWidget />
     </div>
   );
 }

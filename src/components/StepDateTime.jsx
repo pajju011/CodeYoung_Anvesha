@@ -71,6 +71,30 @@ export function StepDateTime({
     });
   }, [selectedDate, selectedTimezone, selectedTrackId, bookedSlots]);
 
+  // Real-time slot & mentor availability map across all 14 selectable dates
+  const dateAvailabilityMap = useMemo(() => {
+    const map = {};
+    for (const item of availableDates) {
+      const daySlots = getAvailableSlotsForDate({
+        dateStr: item.dateStr,
+        userTimezone: selectedTimezone,
+        selectedTrackId,
+        bookedSlots,
+      });
+      const openSlots = daySlots.filter((s) => s.isAvailable);
+      const mentorSet = new Set();
+      openSlots.forEach((s) => {
+        if (s.primaryMentor) mentorSet.add(s.primaryMentor.id);
+        if (s.availableMentors) s.availableMentors.forEach((m) => mentorSet.add(m.id));
+      });
+      map[item.dateStr] = {
+        totalSlots: openSlots.length,
+        mentorsCount: mentorSet.size,
+      };
+    }
+    return map;
+  }, [availableDates, selectedTimezone, selectedTrackId, bookedSlots]);
+
   // Group slots into periods: Morning, Afternoon, Evening
   const groupedSlots = useMemo(() => {
     return {
@@ -148,12 +172,13 @@ export function StepDateTime({
             <Calendar size={16} />
             <span>Select Date</span>
           </div>
-          <span className="text-subtle date-hint">Showing availability for the next 14 days</span>
+          <span className="text-subtle date-hint">Real-time availability across the next 14 days</span>
         </div>
 
         <div className="date-scroll-container" role="radiogroup" aria-label="Select class date">
           {availableDates.map((item) => {
             const isSelected = selectedDate === item.dateStr;
+            const avail = dateAvailabilityMap[item.dateStr];
             return (
               <button
                 key={item.dateStr}
@@ -174,6 +199,18 @@ export function StepDateTime({
                 <span className="date-chip-month">{item.monthName}</span>
                 {item.isTomorrow && <span className="date-chip-tag">Tomorrow</span>}
                 {item.isToday && <span className="date-chip-tag">Today</span>}
+
+                {/* Real-time Mentor & Slot Availability Indicator */}
+                {avail && (
+                  <span
+                    className={`date-chip-avail-badge ${
+                      avail.totalSlots === 0 ? 'is-full' : avail.totalSlots <= 3 ? 'is-low' : 'is-open'
+                    }`}
+                    title={`${avail.totalSlots} slots available with ${avail.mentorsCount} certified mentors`}
+                  >
+                    {avail.totalSlots > 0 ? `${avail.totalSlots} slots` : 'Full'}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -346,9 +383,46 @@ export function StepDateTime({
                 day: 'numeric',
               })}
             </div>
-            <div className="selected-slot-mentor">
-              Matched Mentor: <strong>{selectedSlot.primaryMentor.name}</strong> ({selectedSlot.mentorTimeStr} mentor time)
-            </div>
+
+            {/* Mentor Trust & Social Proof Card */}
+            {selectedSlot.primaryMentor && (
+              <div className="slot-mentor-trust-card">
+                <div className="mentor-trust-header">
+                  {selectedSlot.primaryMentor.imageUrl && (
+                    <img
+                      src={selectedSlot.primaryMentor.imageUrl}
+                      alt={selectedSlot.primaryMentor.name}
+                      className="mentor-trust-avatar"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="mentor-trust-info">
+                    <div className="mentor-trust-name-row">
+                      <span className="mentor-trust-name">{selectedSlot.primaryMentor.name}</span>
+                      <span className="badge badge-primary mentor-trust-badge">
+                        {selectedSlot.primaryMentor.badge || 'Verified Anvesha Educator'}
+                      </span>
+                    </div>
+                    <div className="mentor-trust-rating-row">
+                      <span className="mentor-trust-stars">★ {selectedSlot.primaryMentor.rating || 4.9}</span>
+                      <span className="mentor-trust-count">({selectedSlot.primaryMentor.totalClasses || 300}+ trial classes taught)</span>
+                      <span className="mentor-trust-sep">·</span>
+                      <span className="mentor-trust-edu">{selectedSlot.primaryMentor.education}</span>
+                    </div>
+                    <div className="mentor-trust-tz">
+                      Session Time in Mentor's Zone: <strong>{selectedSlot.mentorTimeStr}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {selectedSlot.primaryMentor.reviewSnippet && (
+                  <div className="mentor-trust-quote">
+                    <span className="quote-mark">“</span>
+                    <em>{selectedSlot.primaryMentor.reviewSnippet}</em>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
