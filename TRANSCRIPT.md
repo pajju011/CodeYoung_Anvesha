@@ -1421,6 +1421,26 @@ add this in read me
   - Access Links section (`Live Production App` and `Live Demo Classroom`).
   - Tech Stack deployment link (`Vercel`).
 
+---
+
+## User Request #45
+
+<USER_REQUEST>
+git clone https://github.com/pajju011/CodeYoung_Anvesha.git
+cd CodeYoung_Anvesha
+Option A: 1-Click Launchers (Easiest)
+Windows: Double-click [run.bat](https://github.com/pajju011/CodeYoung_Anvesha/blob/main/run.bat) (or run run.bat in terminal)
+macOS / Linux: Run ./run.sh in terminal
+(Verifies Node.js, auto-installs dependencies if missing, starts both Express & Vite, and opens your browser)
+add this aslo together
+</USER_REQUEST>
+
+### Solution Implementation
+- Updated **Option A: 1-Click Launchers (Easiest)** in `README.md` to include repository cloning instructions (`git clone` & `cd CodeYoung_Anvesha`) directly above launcher options.
+- Linked `run.bat` to its direct GitHub repository URL (`https://github.com/pajju011/CodeYoung_Anvesha/blob/main/run.bat`).
+- Committed and pushed changes to remote repository.
+
+
 
 
 
