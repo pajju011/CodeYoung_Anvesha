@@ -380,8 +380,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[Anvesha Server] running on http://0.0.0.0:${PORT} (environment: ${process.env.NODE_ENV || 'development'})`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[Anvesha Server] running on http://0.0.0.0:${PORT} (environment: ${process.env.NODE_ENV || 'development'})`);
+  });
+}
 
 export default app;
