@@ -5,8 +5,10 @@ import {
   ExternalLink, ArrowLeft, Maximize2, Minimize2, Sparkles, RefreshCw, Hand
 } from 'lucide-react';
 import { DEMO_MENTORS } from '../data/mentors';
+import { ClassFeedbackModal } from './ClassFeedbackModal';
 
 export function DemoClassroomModal({ booking, onClose, isStandalonePage = false }) {
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -65,7 +67,7 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
   const [activeTab, setActiveTab] = useState('code');
 
   // Code editor state
-  const defaultCode = `# 1-on-1 Trial Class: ${booking?.trackTitle || 'Trial Coding Class'}\n# Mentor: ${booking?.mentorName || 'EduNexa Mentor'} | Student: ${booking?.studentName || 'Student'}\n\ndef start_lesson():\n    student = "${booking?.studentName || 'Student'}"\n    points = 100\n    print(f"👋 Welcome to EduNexa, {student}!")\n    print(f"🚀 Session topic: ${booking?.trackTitle || 'Python Coding'}")\n    print(f"⭐ Starting score: {points} XP")\n    return "Ready to build!"\n\nstart_lesson()`;
+  const defaultCode = `# 1-on-1 Trial Class: ${booking?.trackTitle || 'Trial Coding Class'}\n# Mentor: ${booking?.mentorName || 'Anvesha Mentor'} | Student: ${booking?.studentName || 'Student'}\n\ndef start_lesson():\n    student = "${booking?.studentName || 'Student'}"\n    points = 100\n    print(f"👋 Welcome to Anvesha, {student}!")\n    print(f"🚀 Session topic: ${booking?.trackTitle || 'Python Coding'}")\n    print(f"⭐ Starting score: {points} XP")\n    return "Ready to build!"\n\nstart_lesson()`;
   const [codeContent, setCodeContent] = useState(defaultCode);
   const [consoleOutput, setConsoleOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
@@ -81,7 +83,7 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
     {
       sender: booking?.mentorName || matchedMentor?.name || 'Mentor',
       isMentor: true,
-      text: `Hello ${booking?.studentName || 'there'}! I am ${booking?.mentorName || matchedMentor?.name || 'your mentor'} from EduNexa. Welcome to your trial coding class! Can you see the coding workspace clearly?`,
+      text: `Hello ${booking?.studentName || 'there'}! I am ${booking?.mentorName || matchedMentor?.name || 'your mentor'} from Anvesha. Welcome to your trial coding class! Can you see the coding workspace clearly?`,
       time: 'Just now',
     },
   ]);
@@ -319,7 +321,7 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
 
     const mentorName = booking?.mentorName || matchedMentor?.name || 'Mentor';
     const studentName = booking?.studentName || 'Student';
-    const defaultGreeting = `Hello ${studentName}! I am ${mentorName}, your mentor at EduNexa. Welcome to your 1-on-1 trial class! I am excited to code together today. Whenever you are ready, let's explore our interactive code editor or sketch on the whiteboard!`;
+    const defaultGreeting = `Hello ${studentName}! I am ${mentorName}, your mentor at Anvesha. Welcome to your 1-on-1 trial class! I am excited to code together today. Whenever you are ready, let's explore our interactive code editor or sketch on the whiteboard!`;
     const textToSpeak = typeof customText === 'string' ? customText : defaultGreeting;
 
     window.speechSynthesis.cancel();
@@ -504,6 +506,23 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
     if (onClose) onClose();
   };
 
+  const handleRequestLeave = () => {
+    setShowFeedbackModal(true);
+  };
+
+  const handleFinalExit = () => {
+    setShowFeedbackModal(false);
+    if (isStandalonePage) {
+      if (window.opener) {
+        window.close();
+      } else {
+        window.location.href = '/';
+      }
+    } else if (onClose) {
+      onClose();
+    }
+  };
+
   if (!booking) return null;
 
   const mentorTimeDisplay = booking.mentorTimeStr && booking.mentorTimeStr !== booking.mentorTimezoneAbbr
@@ -515,10 +534,10 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
       {/* Header */}
       <div className="modal-header classroom-modal-header">
         <div className="classroom-header-title">
-          <img src="/edunexa-logo.png" alt="EduNexa Logo" style={{ height: '28px', width: 'auto', objectFit: 'contain' }} />
+          <img src="/anvesha-icon.png" alt="Anvesha Logo" style={{ height: '28px', width: 'auto', objectFit: 'contain' }} />
           <span className="live-indicator-dot"></span>
           <h2 id="classroom-title" className="classroom-title-text">
-            EduNexa Live Classroom — {booking.trackTitle}
+            Anvesha Live Classroom — {booking.trackTitle}
           </h2>
           <span className="badge badge-primary">Session Active</span>
         </div>
@@ -546,13 +565,8 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
             <button
               type="button"
               className="btn btn-secondary btn-sm"
-              onClick={() => {
-                if (window.opener) {
-                  window.close();
-                } else {
-                  window.location.href = '/';
-                }
-              }}
+              onClick={handleRequestLeave}
+              title="Leave classroom and give session feedback"
             >
               <ArrowLeft size={14} />
               <span>Back to Portal</span>
@@ -561,8 +575,9 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
             <button
               type="button"
               className="btn btn-ghost btn-sm modal-close-btn"
-              onClick={onClose}
-              aria-label="Close classroom preview"
+              onClick={handleRequestLeave}
+              aria-label="Close classroom and submit feedback"
+              title="Leave classroom"
             >
               <X size={20} />
             </button>
@@ -760,7 +775,7 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
                   <button
                     type="button"
                     className="speech-preset-btn"
-                    onClick={() => handleToggleMentorSpeech(`Hello ${booking.studentName}! I am ${booking.mentorName}. Welcome to EduNexa! Let's write some fun code together today.`)}
+                    onClick={() => handleToggleMentorSpeech(`Hello ${booking.studentName}! I am ${booking.mentorName}. Welcome to Anvesha! Let's write some fun code together today.`)}
                     title="Play Mentor Greeting"
                   >
                     👋 Greet
@@ -1069,19 +1084,9 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
         <button
           type="button"
           className="btn btn-secondary"
-          onClick={() => {
-            if (isStandalonePage) {
-              if (window.opener) {
-                window.close();
-              } else {
-                window.location.href = '/';
-              }
-            } else if (onClose) {
-              onClose();
-            }
-          }}
+          onClick={handleRequestLeave}
         >
-          {isStandalonePage ? 'Leave Classroom & Return' : 'Leave Classroom'}
+          {isStandalonePage ? 'Leave Classroom & Give Feedback' : 'Leave Classroom'}
         </button>
       </div>
     </div>
@@ -1100,6 +1105,14 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
   return (
     <>
       {modalMarkup}
+
+      {/* Post-Session Feedback Modal */}
+      <ClassFeedbackModal
+        isOpen={showFeedbackModal}
+        booking={booking}
+        onClose={handleFinalExit}
+        isStandalonePage={isStandalonePage}
+      />
 
       {/* Enlarged Mentor Screen Spotlight Theater */}
       {isMentorLarge && (
@@ -1205,7 +1218,7 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false 
                   <button
                     type="button"
                     className="btn btn-secondary btn-sm"
-                    onClick={() => handleToggleMentorSpeech(`Hello ${booking.studentName}! I am ${booking.mentorName}. Welcome to EduNexa! Let's write some fun code together today.`)}
+                    onClick={() => handleToggleMentorSpeech(`Hello ${booking.studentName}! I am ${booking.mentorName}. Welcome to Anvesha! Let's write some fun code together today.`)}
                   >
                     👋 Greet Student
                   </button>

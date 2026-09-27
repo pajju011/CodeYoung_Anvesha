@@ -1,5 +1,5 @@
 // 10 Demo Mentors seeded for trial class scheduling assignment
-// Professional educator profiles with real timezone coordination and high-quality headshots.
+// Professional educator profiles with real timezone coordination, trust signals, and high-quality headshots.
 
 export const DEMO_MENTORS = [
   {
@@ -18,6 +18,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 14, end: 22 }, // 2:00 PM to 10:00 PM IST
     workingDays: [0, 1, 2, 3, 4, 5, 6],
     maxDailyDemos: 2,
+    rating: 4.96,
+    totalClasses: 380,
+    badge: 'MIT Scratch Certified Master',
+    reviewSnippet: 'Priya made coding feel effortless for my 8-year-old daughter. Best introduction to programming we could have asked for! — Sarah M., London',
     bio: 'Patient and engaging instructor specializing in visual algorithms and introductory computational thinking for kids.'
   },
   {
@@ -36,6 +40,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 13, end: 21 }, // 1:00 PM to 9:00 PM IST
     workingDays: [0, 1, 2, 3, 4, 5, 6],
     maxDailyDemos: 2,
+    rating: 4.94,
+    totalClasses: 420,
+    badge: 'Top 1% STEM Mentor',
+    reviewSnippet: 'Amit has a rare gift of turning math puzzles into thrilling games. My son was glued to the screen! — David K., New York',
     bio: 'Connects playful mathematical logic with game development to help students develop strong analytical instincts.'
   },
   {
@@ -54,6 +62,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 14, end: 22 },
     workingDays: [0, 1, 2, 3, 4, 5, 6],
     maxDailyDemos: 2,
+    rating: 4.92,
+    totalClasses: 290,
+    badge: 'Early Coding Specialist',
+    reviewSnippet: 'Ananya was incredibly patient with my 7-year-old. Her sprite animation demo was pure magic. — Priya S., San Francisco',
     bio: 'Fosters curiosity in elementary students through animated storytelling and creative sprite animations.'
   },
   {
@@ -72,6 +84,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 15, end: 23 }, // 3:00 PM to 11:00 PM IST
     workingDays: [0, 1, 2, 3, 4, 5, 6],
     maxDailyDemos: 2,
+    rating: 4.95,
+    totalClasses: 350,
+    badge: 'Python Senior Instructor',
+    reviewSnippet: 'Rohan transitioned my son from blocks to real Python syntax in just 45 minutes. — Mark T., Austin',
     bio: 'Bridges block-based concepts to real text syntax with Python, web markup, and interactive mini-apps.'
   },
   {
@@ -90,6 +106,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 13, end: 21 },
     workingDays: [0, 1, 2, 3, 4, 5, 6],
     maxDailyDemos: 2,
+    rating: 4.93,
+    totalClasses: 310,
+    badge: 'IIT Roorkee Alum · Logic Pro',
+    reviewSnippet: 'Neha explained game loops with such clarity. My daughter built her first mini-game on the spot! — Emma R., Manchester',
     bio: 'Focuses on structured thinking, pattern recognition, and game loops that keep children excited about learning.'
   },
   {
@@ -108,6 +128,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 16, end: 24 }, // 4:00 PM to 12:00 AM IST (matches US mornings & afternoons)
     workingDays: [0, 1, 2, 3, 4, 5, 6],
     maxDailyDemos: 2,
+    rating: 4.91,
+    totalClasses: 270,
+    badge: 'Algorithmic Thinking Coach',
+    reviewSnippet: 'Vikram challenges teenagers in the best way possible. Truly top-tier coaching. — Rajesh P., Bengaluru',
     bio: 'Mentors teenagers through algorithmic reasoning and text-based coding challenges.'
   },
   {
@@ -126,6 +150,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 14, end: 22 },
     workingDays: [0, 1, 2, 3, 4, 5, 6],
     maxDailyDemos: 2,
+    rating: 4.95,
+    totalClasses: 330,
+    badge: 'Creative Frontend Mentor',
+    reviewSnippet: 'Sneha inspired my daughter to build her own website portfolio. Wonderful energy and expertise! — Claire H., Oxford',
     bio: 'Passionate about creative frontend design and empowering students to publish their very first live web projects.'
   },
   {
@@ -144,6 +172,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 9, end: 17 }, // 9:00 AM to 5:00 PM UK
     workingDays: [1, 2, 3, 4, 5],
     maxDailyDemos: 2,
+    rating: 4.96,
+    totalClasses: 260,
+    badge: 'UK Computing Specialist',
+    reviewSnippet: 'Sarah knows the UK curriculum inside out. Brilliant rapport with our 12-year-old. — James W., London',
     bio: 'Experienced UK computing curriculum teacher guiding students through web architecture and HTML/CSS.'
   },
   {
@@ -162,6 +194,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 10, end: 18 },
     workingDays: [1, 2, 3, 4, 5],
     maxDailyDemos: 2,
+    rating: 4.90,
+    totalClasses: 240,
+    badge: 'Trinity Dublin CS Alum',
+    reviewSnippet: 'Liam made computational logic exciting and relatable. Highly recommended trial session. — Fiona B., Dublin',
     bio: 'Guides middle and high school students through their journey from block-based coding to syntax-driven languages.'
   },
   {
@@ -180,6 +216,10 @@ export const DEMO_MENTORS = [
     workingHours: { start: 9, end: 17 }, // 9:00 AM to 5:00 PM EDT
     workingDays: [1, 2, 3, 4, 5],
     maxDailyDemos: 2,
+    rating: 4.97,
+    totalClasses: 360,
+    badge: 'US Tech Education Leader',
+    reviewSnippet: 'David connected with my 14-year-old right away. Fantastic hands-on coding walkthrough. — Michael B., Boston',
     bio: 'Focuses on structured problem-solving, algorithmic thinking, and building early real-world Python applications.'
   }
 ];

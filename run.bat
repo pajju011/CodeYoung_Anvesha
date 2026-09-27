@@ -1,11 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
-title EduNexa - 1-on-1 Trial Class Appointment System
+title Anvesha - 1-on-1 Trial Class Appointment System
 color 0b
 
 echo ========================================================
-echo   EduNexa: 1-on-1 Trial Class Appointment System
-echo   Your time. Your mentor. Your class.
+echo   Anvesha: 1-on-1 Trial Class Appointment System
+echo   Discover. Connect. Learn.
 echo ========================================================
 echo.
 

@@ -1,5 +1,5 @@
 /**
- * Client API service for EduNexa
+ * Client API service for Anvesha
  * Communicates with Node.js Express backend (/api/*), with local calculation fallback.
  */
 

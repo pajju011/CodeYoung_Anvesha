@@ -19,16 +19,16 @@ export function Header({
           type="button"
           className="brand-logo-btn"
           onClick={onResetToNewBooking}
-          title="EduNexa — Return to Booking"
+          title="Anvesha — Return to Booking"
         >
           <img
-            src="/edunexa-logo.png"
-            alt="EduNexa"
+            src="/anvesha-icon.png"
+            alt="Anvesha"
             className="brand-logo-image"
           />
           <div className="brand-text-group">
-            <span className="brand-title">EduNexa</span>
-            <span className="brand-sub">Your time. Your mentor. Your class.</span>
+            <span className="brand-title">Anvesha</span>
+            <span className="brand-sub">Discover. Connect. Learn.</span>
           </div>
         </button>
 
@@ -48,18 +48,21 @@ export function Header({
             type="button"
             className="header-link-btn"
             onClick={onOpenMentorsModal}
+            title="View 10 certified demo mentors"
           >
             <UserCheck size={16} />
-            <span>Mentors (10)</span>
+            <span className="header-link-text">Mentors</span>
+            <span className="header-count-bubble header-mentor-count">10</span>
           </button>
 
           <button
             type="button"
             className="header-link-btn"
             onClick={onOpenBookingsModal}
+            title="View your booked trial classes"
           >
             <BookOpen size={16} />
-            <span>My Bookings</span>
+            <span className="header-link-text">Bookings</span>
             {bookingCount > 0 && (
               <span className="header-count-bubble">{bookingCount}</span>
             )}

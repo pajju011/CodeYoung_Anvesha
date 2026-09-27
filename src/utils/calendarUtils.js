@@ -31,11 +31,11 @@ export function downloadIcsFile(booking) {
   const icsContent = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//EduNexa//Trial Class Booking//EN',
+    'PRODID:-//Anvesha//Trial Class Booking//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    `UID:edunexa-${booking.id}@edunexa.demo`,
+    `UID:anvesha-${booking.id}@anvesha.demo`,
     `DTSTAMP:${formatUtcForIcs(now)}`,
     `DTSTART:${formatUtcForIcs(startDate)}`,
     `DTEND:${formatUtcForIcs(endDate)}`,

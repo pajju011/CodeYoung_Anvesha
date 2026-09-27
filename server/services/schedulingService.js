@@ -156,6 +156,7 @@ export function calculateAvailableSlots({
   const now = new Date();
   const dstInfo = getDstDetails(userTimezone, new Date(dateStr + 'T12:00:00Z'));
   const slots = [];
+  const slotMentorAssignmentCount = {};
 
   for (const slotDef of STANDARD_LOCAL_HOURS) {
     const slotUtc = createUtcFromLocal(dateStr, slotDef.time, userTimezone);
@@ -227,7 +228,17 @@ export function calculateAvailableSlots({
     });
 
     const isAvailable = availableMentors.length > 0;
-    const primaryMentor = isAvailable ? availableMentors[0] : null;
+    let primaryMentor = null;
+    if (availableMentors.length > 0) {
+      primaryMentor = availableMentors.reduce((best, current) => {
+        const bestCount = slotMentorAssignmentCount[best.id] || 0;
+        const currentCount = slotMentorAssignmentCount[current.id] || 0;
+        if (currentCount < bestCount) return current;
+        return best;
+      }, availableMentors[0]);
+
+      slotMentorAssignmentCount[primaryMentor.id] = (slotMentorAssignmentCount[primaryMentor.id] || 0) + 1;
+    }
 
     let mentorTimeStr = '';
     if (primaryMentor) {

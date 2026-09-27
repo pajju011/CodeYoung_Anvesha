@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Check, Calendar, Clock, User, Globe, Mail, Phone, BookOpen, ShieldCheck, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Check, Calendar, Clock, User, Globe, Mail, Phone, BookOpen, ShieldCheck, AlertCircle, Star, Award } from 'lucide-react';
 import { LEARNING_TRACKS } from '../data/subjects';
 import { getTimezoneMeta } from '../data/timezones';
 import { formatInTimezone } from '../utils/timezoneUtils';
@@ -106,19 +106,35 @@ export function StepReview({
                 <img
                   src={mentor.imageUrl}
                   alt={mentor.name}
-                  style={{ width: '44px', height: '44px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--color-border)', flexShrink: 0 }}
+                  style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--color-border)', flexShrink: 0 }}
                   loading="lazy"
                 />
               ) : null}
-              <div>
-                <div className="review-card-primary">{mentor.name}</div>
-                <div className="review-card-footnote">{mentor.title} · {mentor.education}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                  <div className="review-card-primary">{mentor.name}</div>
+                  <span className="badge badge-primary" style={{ fontSize: '0.6875rem', padding: '0.15rem 0.45rem' }}>
+                    {mentor.badge || 'Certified Educator'}
+                  </span>
+                </div>
+                <div className="review-card-footnote" style={{ marginTop: '0.15rem' }}>
+                  <span style={{ color: '#eab308', fontWeight: 600 }}>★ {mentor.rating || 4.9}</span>
+                  <span style={{ margin: '0 0.35rem', color: 'var(--color-text-subtle)' }}>·</span>
+                  <span>{mentor.totalClasses || 300}+ classes</span>
+                  <span style={{ margin: '0 0.35rem', color: 'var(--color-text-subtle)' }}>·</span>
+                  <span>{mentor.education}</span>
+                </div>
               </div>
             </div>
             <div className="review-card-secondary" style={{ marginTop: '0.5rem' }}>
               <Globe size={15} />
               <span>Mentor Local Time: <strong>{formattedMentorTime}</strong></span>
             </div>
+            {mentor.reviewSnippet && (
+              <div className="review-mentor-quote">
+                <em>“{mentor.reviewSnippet}”</em>
+              </div>
+            )}
           </div>
         </div>
 

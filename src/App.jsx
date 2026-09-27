@@ -16,8 +16,18 @@ import { Footer } from './components/Footer';
 
 import { detectUserTimezone, getTimezoneMeta } from './data/timezones';
 import { LEARNING_TRACKS } from './data/subjects';
-import { getStoredBookings, saveBooking, cancelStoredBooking } from './utils/storageUtils';
+import { getStoredBookings, saveBooking, cancelStoredBooking, clearAllStoredBookings } from './utils/storageUtils';
 import { submitBooking, cancelBookingApi } from './services/api';
+
+const BLANK_FORM_DATA = {
+  parentName: '',
+  parentEmail: '',
+  parentPhone: '',
+  studentName: '',
+  studentAge: '9-11',
+  studentExperience: 'beginner',
+  studentGoals: '',
+};
 
 export function App() {
   // Timezone selection
@@ -32,16 +42,8 @@ export function App() {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState(null);
 
-  // Form Details
-  const [formData, setFormData] = useState({
-    parentName: '',
-    parentEmail: '',
-    parentPhone: '',
-    studentName: '',
-    studentAge: '9-11',
-    studentExperience: 'beginner',
-    studentGoals: '',
-  });
+  // Form Details: always clean & blank for customer privacy (no data leakage)
+  const [formData, setFormData] = useState(BLANK_FORM_DATA);
 
   // Stored Bookings and Confirmed state
   const [bookings, setBookings] = useState([]);
@@ -72,6 +74,10 @@ export function App() {
 
   const handleFormChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleResetForm = () => {
+    setFormData(BLANK_FORM_DATA);
   };
 
   const goToStep = (step) => {
@@ -148,6 +154,14 @@ export function App() {
     setCurrentStep(1);
     setMaxReachedStep(1);
     setSelectedSlot(null);
+    setFormData(BLANK_FORM_DATA); // Clean slate: ensures no previous customer details are retained!
+  };
+
+  const handleClearAllBookings = () => {
+    clearAllStoredBookings();
+    setBookings([]);
+    setConfirmedBooking(null);
+    setFormData(BLANK_FORM_DATA);
   };
 
   // If opened in a dedicated new tab (?view=classroom&id=...), render full standalone classroom page
@@ -195,7 +209,7 @@ export function App() {
         onOpenTimezoneModal={() => setIsTimezoneModalOpen(true)}
         onOpenBookingsModal={() => setIsBookingsModalOpen(true)}
         onOpenMentorsModal={() => setIsMentorsModalOpen(true)}
-        bookingCount={bookings.filter((b) => b.status === 'confirmed').length}
+        bookingCount={(Array.isArray(bookings) ? bookings : []).filter((b) => b?.status === 'confirmed').length}
         onResetToNewBooking={handleResetForNewBooking}
       />
 
@@ -235,7 +249,7 @@ export function App() {
               onSelectSlot={(slot) => setSelectedSlot(slot)}
               selectedTrackId={selectedTrackId}
               onSelectTrack={(tId) => setSelectedTrackId(tId)}
-              bookedSlots={bookings.filter((b) => b.status === 'confirmed')}
+              bookedSlots={(Array.isArray(bookings) ? bookings : []).filter((b) => b?.status === 'confirmed')}
               onBack={() => goToStep(1)}
               onNext={() => goToStep(3)}
             />
@@ -279,7 +293,6 @@ export function App() {
       <Footer
         onOpenPrivacy={() => setPolicyModalType('privacy')}
         onOpenTerms={() => setPolicyModalType('terms')}
-        onOpenMentors={() => setIsMentorsModalOpen(true)}
       />
 
       {/* Header Quick Timezone Modal */}
@@ -305,6 +318,7 @@ export function App() {
         bookings={bookings}
         onCancelBooking={handleCancelBooking}
         onJoinDemoClass={handleJoinDemoClass}
+        onClearAllBookings={handleClearAllBookings}
       />
 
       {/* Mentor Directory Modal */}

@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Clock, Search, Check, Info } from 'lucide-react';
-import { TIMEZONE_LIST, getTimezoneMeta } from '../data/timezones';
+import { Globe, Clock, Search, Check, MapPin, RotateCcw } from 'lucide-react';
+import { TIMEZONE_LIST, getTimezoneMeta, detectUserTimezone } from '../data/timezones';
 import { formatInTimezone, getDstDetails } from '../utils/timezoneUtils';
 
 export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Detect user's browser/system timezone
+  const detectedTz = detectUserTimezone();
+  const detectedMeta = getTimezoneMeta(detectedTz);
 
   // Update live clock every second
   useEffect(() => {
@@ -26,7 +30,9 @@ export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
 
   const selectedMeta = getTimezoneMeta(selectedTimezone);
   const formattedCurrentTime = formatInTimezone(currentTime, selectedTimezone, 'time');
+  const detectedTimeStr = formatInTimezone(currentTime, detectedTz, 'time-with-abbr');
   const dstDetails = getDstDetails(selectedTimezone, currentTime);
+  const isDetectedSelected = selectedTimezone === detectedTz;
 
   return (
     <div className="card step-card">
@@ -34,13 +40,56 @@ export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
         <div className="step-badge-indicator">Step 1 of 4</div>
         <h2 className="step-title">Select Your Timezone</h2>
         <p className="step-desc">
-          We use your timezone to show accurate, real-time availability for matching mentors.
+          We automatically detected your local region to show real-time mentor availability in your local time.
         </p>
       </div>
 
+      {/* Auto-Detection Clarity Bar */}
+      <div className="tz-auto-detect-bar">
+        <div className="tz-detect-left">
+          <MapPin size={15} className="text-primary flex-shrink-0" />
+          <span>
+            Auto-Detected Device Location: <strong>{detectedMeta.city} ({detectedMeta.abbr})</strong>
+            <span className="tz-detect-sep">·</span>
+            Your Clock: <strong>{detectedTimeStr}</strong>
+          </span>
+        </div>
+        {!isDetectedSelected ? (
+          <button
+            type="button"
+            className="btn btn-secondary btn-xs tz-reset-btn"
+            onClick={() => onSelectTimezone(detectedTz)}
+            title="Reset to your detected system timezone"
+          >
+            <RotateCcw size={12} />
+            <span>Switch Back to My Local ({detectedMeta.abbr})</span>
+          </button>
+        ) : (
+          <span className="badge badge-success tz-synced-badge">
+            <Check size={12} />
+            <span>Synced to Your Device</span>
+          </span>
+        )}
+      </div>
+
+      {/* Cross-Region Comparison if user selected a different timezone */}
+      {!isDetectedSelected && (
+        <div className="tz-comparison-alert">
+          <div className="tz-compare-item">
+            <span className="tz-compare-label">Your Device Time:</span>
+            <span className="tz-compare-val">{detectedTimeStr} ({detectedMeta.city})</span>
+          </div>
+          <span className="tz-compare-arrow">⇄</span>
+          <div className="tz-compare-item">
+            <span className="tz-compare-label">Booking Timezone:</span>
+            <span className="tz-compare-val highlight">{formattedCurrentTime} {selectedMeta.abbr} ({selectedMeta.city})</span>
+          </div>
+        </div>
+      )}
+
       <div className="tz-current-banner">
         <div className="tz-current-info">
-          <div className="tz-current-label">Currently Selected Timezone</div>
+          <div className="tz-current-label">Currently Selected Booking Timezone</div>
           <div className="tz-current-val">
             <Globe size={18} className="tz-current-icon" />
             <span className="tz-name">{selectedMeta.label}</span>
@@ -57,7 +106,7 @@ export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
         <div className="tz-clock-box">
           <Clock size={16} />
           <span className="tz-clock-time">{formattedCurrentTime}</span>
-          <span className="tz-clock-label">Current local time</span>
+          <span className="tz-clock-label">{selectedMeta.abbr} Time</span>
         </div>
       </div>
 
@@ -120,13 +169,6 @@ export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
           <p>No timezones match "{searchQuery}". Try searching for a city name or region.</p>
         </div>
       )}
-
-      <div className="alert alert-info tz-notice">
-        <Info size={18} className="flex-shrink-0" />
-        <div>
-          <strong>Automatic Conversion:</strong> All class dates and slots in the following steps will be calculated in your local time ({selectedMeta.abbr}). Mentors will see the corresponding time in their local timezone.
-        </div>
-      </div>
 
       <div className="step-actions">
         <div></div>

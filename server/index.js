@@ -24,7 +24,7 @@ let bookingsStore = [];
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'EduNexa Scheduling API',
+    service: 'Anvesha Scheduling API',
     mentorsCount: MENTORS.length,
     maxDailyCapacityAcrossMentors: MENTORS.length * MAX_CLASSES_PER_MENTOR_PER_DAY,
     currentTimeUtc: new Date().toISOString(),
@@ -241,13 +241,38 @@ app.post('/api/bookings', (req, res) => {
 
 /**
  * GET /api/bookings
- * Returns all active bookings
+ * Returns bookings. If email query param provided, returns customer's bookings.
+ * Otherwise returns sanitized slots to protect personal contact details from other users.
  */
 app.get('/api/bookings', (req, res) => {
+  const { email } = req.query;
+  if (email) {
+    const userBookings = bookingsStore.filter(
+      (b) => b.parentEmail?.toLowerCase() === email.trim().toLowerCase()
+    );
+    return res.json({
+      success: true,
+      count: userBookings.length,
+      bookings: userBookings,
+    });
+  }
+
+  // Sanitized view: protect customer privacy from other visitors
+  const sanitized = bookingsStore.map((b) => ({
+    id: b.id,
+    referenceCode: b.referenceCode,
+    slotUtc: b.slotUtc,
+    slotLabel: b.slotLabel,
+    mentorId: b.mentorId,
+    mentorName: b.mentorName,
+    trackTitle: b.trackTitle,
+    status: b.status,
+  }));
+
   res.json({
     success: true,
-    count: bookingsStore.length,
-    bookings: bookingsStore,
+    count: sanitized.length,
+    bookings: sanitized,
   });
 });
 
@@ -276,8 +301,66 @@ app.delete('/api/bookings/:id', (req, res) => {
   });
 });
 
+/**
+ * In-memory store for trial class session feedbacks
+ */
+let feedbackStore = [];
+
+/**
+ * POST /api/feedback
+ * Records parent/student feedback after leaving or completing a trial class
+ */
+app.post('/api/feedback', (req, res) => {
+  const {
+    bookingId,
+    referenceCode,
+    mentorName,
+    studentName,
+    rating = 5,
+    pace = 'Just Right',
+    highlights = [],
+    continueInterest = 'Yes',
+    comments = '',
+  } = req.body;
+
+  const newFeedback = {
+    id: `fb_${Date.now()}`,
+    bookingId: bookingId || 'session_general',
+    referenceCode: referenceCode || 'CY-GENERAL',
+    mentorName: mentorName || 'Assigned Mentor',
+    studentName: studentName || 'Student',
+    rating: Number(rating) || 5,
+    pace,
+    highlights,
+    continueInterest,
+    comments,
+    submittedAt: new Date().toISOString(),
+  };
+
+  feedbackStore.push(newFeedback);
+  console.log(`[Feedback Received] Ref #${newFeedback.referenceCode}: ${newFeedback.rating} stars for ${newFeedback.mentorName} from ${newFeedback.studentName}`);
+
+  res.json({
+    success: true,
+    message: 'Thank you for your feedback! Our academic counseling team has received your review.',
+    feedback: newFeedback,
+  });
+});
+
+/**
+ * GET /api/feedback
+ * Returns collected session feedbacks
+ */
+app.get('/api/feedback', (req, res) => {
+  res.json({
+    success: true,
+    count: feedbackStore.length,
+    feedbacks: feedbackStore,
+  });
+});
+
 app.listen(PORT, () => {
-  console.log(`[EduNexa API Server] running on http://127.0.0.1:${PORT}`);
+  console.log(`[Anvesha API Server] running on http://127.0.0.1:${PORT}`);
 });
 
 export default app;

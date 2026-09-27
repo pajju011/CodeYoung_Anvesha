@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Calendar, Clock, User, Globe, Video, Download, ExternalLink, PlusCircle, Laptop, Mail, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle2, Calendar, Clock, User, Globe, Video, Download, ExternalLink, PlusCircle, Laptop, Mail, ChevronDown, ChevronUp, CheckSquare, Wifi, Mic, Sparkles } from 'lucide-react';
 import { generateGoogleCalendarUrl, downloadIcsFile } from '../utils/calendarUtils';
 import { formatInTimezone } from '../utils/timezoneUtils';
 
@@ -196,7 +196,34 @@ export function BookingConfirmation({
                     <div><strong>Date & Time (Your Local):</strong> {formattedDate} at {formattedLocalTime}</div>
                     <div><strong>Live Class Link:</strong> <a href={booking.classroomUrl} onClick={(e) => { e.preventDefault(); onJoinDemoClass(booking); }}>{booking.classroomUrl}</a></div>
                   </div>
-                  <p>Please join 5 minutes early using Google Chrome on a desktop or laptop computer.</p>
+
+                  {/* Instant Calendar Syncing in Email (Requirement #3) */}
+                  <div className="email-cal-sync-row">
+                    <span className="email-cal-sync-text">Add to your schedule:</span>
+                    <div className="email-cal-btn-group">
+                      <a
+                        href={googleCalendarUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="email-sync-btn"
+                        title="Add directly to your Google Calendar"
+                      >
+                        <ExternalLink size={12} />
+                        <span>Google Calendar</span>
+                      </a>
+                      <button
+                        type="button"
+                        className="email-sync-btn"
+                        onClick={() => downloadIcsFile(booking)}
+                        title="Download iCal event file (.ics)"
+                      >
+                        <Download size={12} />
+                        <span>Download .ics</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <p style={{ marginTop: '0.75rem' }}>Please join 5 minutes early using Google Chrome on a desktop or laptop computer.</p>
                 </div>
               </div>
             ) : (
@@ -221,11 +248,56 @@ export function BookingConfirmation({
         )}
       </div>
 
-      {/* Class Preparation Reminder */}
-      <div className="prep-notice-box">
-        <Laptop size={18} className="prep-icon" />
-        <div className="prep-content">
-          <strong>Recommended Setup:</strong> Please join from a desktop or laptop computer with the Google Chrome browser, a working microphone, and a stable internet connection.
+      {/* Pre-Class Preparation Guide (Requirement #3) */}
+      <div className="prep-guide-card">
+        <div className="prep-guide-header">
+          <div className="prep-guide-badge">
+            <CheckSquare size={16} />
+            <span>Pre-Class Preparation Guide</span>
+          </div>
+          <span className="prep-guide-sub">Quick checklist before your session starts</span>
+        </div>
+
+        <div className="prep-checklist-grid">
+          <div className="prep-check-item">
+            <div className="prep-item-icon-box">
+              <Laptop size={18} />
+            </div>
+            <div className="prep-item-text">
+              <strong>Desktop or Laptop with Chrome</strong>
+              <span>Use a PC, Mac, or Chromebook with Google Chrome for the live code canvas & whiteboard.</span>
+            </div>
+          </div>
+
+          <div className="prep-check-item">
+            <div className="prep-item-icon-box">
+              <Mic size={18} />
+            </div>
+            <div className="prep-item-text">
+              <strong>Webcam & Microphone Ready</strong>
+              <span>Classes are 1-on-1 and interactive. Having your child's video on helps the mentor build rapport.</span>
+            </div>
+          </div>
+
+          <div className="prep-check-item">
+            <div className="prep-item-icon-box">
+              <Sparkles size={18} />
+            </div>
+            <div className="prep-item-text">
+              <strong>Zero Software Downloads</strong>
+              <span>No Zoom or app installation needed! The virtual classroom opens securely directly inside your browser.</span>
+            </div>
+          </div>
+
+          <div className="prep-check-item">
+            <div className="prep-item-icon-box">
+              <Clock size={18} />
+            </div>
+            <div className="prep-item-text">
+              <strong>Join 5 Minutes Early</strong>
+              <span>Click the "Join Demo Class" link at <em>{formattedLocalTime}</em> to test your audio before starting.</span>
+            </div>
+          </div>
         </div>
       </div>
 

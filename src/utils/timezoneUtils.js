@@ -208,6 +208,7 @@ export function getAvailableSlotsForDate({
   bookedSlots = [],
 }) {
   const results = [];
+  const slotMentorAssignmentCount = {};
 
   for (const slotDef of STANDARD_DAILY_SLOTS) {
     const utcDate = createUtcDateFromLocal(dateStr, slotDef.time, userTimezone);
@@ -293,8 +294,18 @@ export function getAvailableSlotsForDate({
       return true;
     });
 
-    // Pick top matched mentor
-    const primaryMentor = matchingMentors.length > 0 ? matchingMentors[0] : null;
+    // Pick top matched mentor with fair distribution across the day's slots
+    let primaryMentor = null;
+    if (matchingMentors.length > 0) {
+      primaryMentor = matchingMentors.reduce((best, current) => {
+        const bestCount = slotMentorAssignmentCount[best.id] || 0;
+        const currentCount = slotMentorAssignmentCount[current.id] || 0;
+        if (currentCount < bestCount) return current;
+        return best;
+      }, matchingMentors[0]);
+
+      slotMentorAssignmentCount[primaryMentor.id] = (slotMentorAssignmentCount[primaryMentor.id] || 0) + 1;
+    }
 
     let mentorTimeStr = '';
     if (primaryMentor) {
