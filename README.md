@@ -1,6 +1,7 @@
 # Anvesha
 
-> **Discover. Connect. Learn.**
+> **Discover. Connect. Learn.**  
+> 🌐 **Live Website:** [https://code-young-anvesha.vercel.app](https://code-young-anvesha.vercel.app)
 
 Anvesha is an intuitive 1-on-1 trial class appointment booking platform designed to streamline scheduling between international parents (US/UK) and educators in India. Parents can select a specialized learning track (Scratch, Python, Web Dev, Math & Logic), choose a convenient time slot in their local timezone, get automatically paired with a certified mentor, receive instant calendar invites & live classroom links, and attend an interactive virtual demo session.
 
@@ -31,9 +32,11 @@ npm run dev
 ---
 
 ### 🌐 Access Links
-- **Frontend App:** [http://localhost:5173](http://localhost:5173)
-- **Backend API:** [http://localhost:3001/api/health](http://localhost:3001/api/health)
-- **Demo Classroom:** [http://localhost:5173/?view=classroom&id=demo_session](http://localhost:5173/?view=classroom&id=demo_session)
+- **Live Production App:** [https://code-young-anvesha.vercel.app](https://code-young-anvesha.vercel.app)
+- **Live Demo Classroom:** [https://code-young-anvesha.vercel.app/?view=classroom&id=demo_session](https://code-young-anvesha.vercel.app/?view=classroom&id=demo_session)
+- **Local Frontend:** [http://localhost:5173](http://localhost:5173)
+- **Local Backend API:** [http://localhost:3001/api/health](http://localhost:3001/api/health)
+- **Local Classroom:** [http://localhost:5173/?view=classroom&id=demo_session](http://localhost:5173/?view=classroom&id=demo_session)
 
 ---
 
@@ -130,7 +133,7 @@ graph TB
 
 - **Frontend:** React 19, Vite, Vanilla CSS, Lucide Icons
 - **Backend:** Node.js, Express 5
-- **Deployment:** Vercel
+- **Deployment:** [Vercel (code-young-anvesha.vercel.app)](https://code-young-anvesha.vercel.app)
 
 ---
 
