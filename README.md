@@ -6,11 +6,19 @@ A 1-on-1 trial class appointment booking platform connecting parents and mentors
 
 ## 🚀 Quick Start
 
-### 1-Click Launch
+### 1. Clone the Repository
+```bash
+git clone https://github.com/pajju011/CodeYoung_Anvesha.git
+cd CodeYoung_Anvesha
+```
+
+### 2. Run the Application
+
+**1-Click Launch:**
 - **Windows:** Double-click `run.bat` (or run `run.bat` in terminal)
 - **macOS / Linux:** Run `./run.sh`
 
-### Manual Run
+**Or via npm:**
 ```bash
 npm install
 npm run dev
