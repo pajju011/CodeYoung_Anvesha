@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, User, Globe, Video, Download, Trash2, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
+import { X, Calendar, Clock, User, Globe, Video, Download, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { downloadIcsFile } from '../utils/calendarUtils';
 import { formatInTimezone } from '../utils/timezoneUtils';
 
@@ -44,15 +44,6 @@ export function MyBookingsModal({
         </div>
 
         <div className="modal-body">
-          {bookings.length > 0 && (
-            <div className="privacy-device-note">
-              <ShieldCheck size={16} className="text-success flex-shrink-0" />
-              <span>
-                <strong>Shared Device Privacy:</strong> These sessions are stored locally in your browser. Personal details are never visible or prefilled for other users.
-              </span>
-            </div>
-          )}
-
           {bookings.length === 0 ? (
             <div className="empty-state" style={{ padding: '2rem 1rem' }}>
               <Calendar size={36} className="text-subtle" />

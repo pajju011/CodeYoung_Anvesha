@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Calendar, Clock, ArrowLeft, ArrowRight, UserCheck, Sparkles, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, ArrowRight, UserCheck, Sparkles, AlertCircle, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { LEARNING_TRACKS } from '../data/subjects';
 import { getTimezoneMeta } from '../data/timezones';
 import { getAvailableSlotsForDate, formatInTimezone } from '../utils/timezoneUtils';
+import { CalendarPickerModal } from './CalendarPickerModal';
 
 export function StepDateTime({
   selectedTimezone,
@@ -17,23 +18,27 @@ export function StepDateTime({
   onNext,
 }) {
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
 
-  // Generate the next 14 selectable calendar dates starting from tomorrow (or today if early enough)
+  // Generate selectable calendar dates spanning 60 days (current month + next month + following month)
   const availableDates = useMemo(() => {
     const list = [];
     const now = new Date();
-    // Start from today or tomorrow
     const startDayOffset = 0; 
-    for (let i = startDayOffset; i < startDayOffset + 14; i++) {
+    for (let i = startDayOffset; i < startDayOffset + 60; i++) {
       const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
       const dateStr = `${year}-${month}-${day}`;
+      const yearMonth = `${year}-${month}`;
       
       list.push({
         dateStr,
         dateObj: d,
+        yearMonth,
+        monthYearLabel: d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+        fullMonthLabel: d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
         dayOfWeek: d.toLocaleDateString('en-US', { weekday: 'short' }),
         dayOfMonth: d.getDate(),
         monthName: d.toLocaleDateString('en-US', { month: 'short' }),
@@ -43,6 +48,31 @@ export function StepDateTime({
     }
     return list;
   }, []);
+
+  // Compute distinct available months for quick jumping
+  const availableMonths = useMemo(() => {
+    const seen = new Set();
+    const months = [];
+    const now = new Date();
+    const currentYm = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const nextMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const nextYm = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2, '0')}`;
+
+    for (const d of availableDates) {
+      if (!seen.has(d.yearMonth)) {
+        seen.add(d.yearMonth);
+        months.push({
+          yearMonth: d.yearMonth,
+          label: d.monthYearLabel,
+          fullLabel: d.fullMonthLabel,
+          firstDateStr: d.dateStr,
+          isCurrentMonth: d.yearMonth === currentYm,
+          isNextMonth: d.yearMonth === nextYm,
+        });
+      }
+    }
+    return months;
+  }, [availableDates]);
 
   // Default select first available date if none selected
   useEffect(() => {
@@ -166,6 +196,41 @@ export function StepDateTime({
     }
   };
 
+  // Quick-jump directly to any month (e.g. Next Month / October)
+  const handleJumpToMonth = (monthItem) => {
+    if (!selectedDate.startsWith(monthItem.yearMonth)) {
+      onSelectDate(monthItem.firstDateStr);
+      if (selectedSlot && selectedSlot.dateStr !== monthItem.firstDateStr) {
+        onSelectSlot(null);
+      }
+    }
+    // Scroll carousel to the first date of that month
+    setTimeout(() => {
+      if (dateScrollRef.current) {
+        const targetChip = dateScrollRef.current.querySelector(`[data-date="${monthItem.firstDateStr}"]`);
+        if (targetChip) {
+          targetChip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        }
+      }
+    }, 50);
+  };
+
+  // Callback when a parent picks a specific date from the Full Calendar Modal
+  const handleSelectDateFromCalendar = (dateStr) => {
+    onSelectDate(dateStr);
+    if (selectedSlot && selectedSlot.dateStr !== dateStr) {
+      onSelectSlot(null);
+    }
+    setTimeout(() => {
+      if (dateScrollRef.current) {
+        const targetChip = dateScrollRef.current.querySelector(`[data-date="${dateStr}"]`);
+        if (targetChip) {
+          targetChip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    }, 150);
+  };
+
   return (
     <div className="card step-card">
       <div className="card-header">
@@ -208,7 +273,7 @@ export function StepDateTime({
             <span>Select Date</span>
           </div>
           <div className="date-picker-actions">
-            <span className="text-subtle date-hint">Real-time availability across 14 days</span>
+            <span className="text-subtle date-hint">60 days open · Book for this month or next month</span>
             <div className="date-nav-buttons" role="group" aria-label="Slide dates">
               <button
                 type="button"
@@ -232,6 +297,39 @@ export function StepDateTime({
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Month Quick Jump Selector */}
+        <div className="month-jump-tabs" role="tablist" aria-label="Filter by month">
+          <div className="month-jump-pills">
+            {availableMonths.map((m) => {
+              const isSelectedMonth = selectedDate.startsWith(m.yearMonth);
+              return (
+                <button
+                  key={m.yearMonth}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSelectedMonth}
+                  className={`month-tab-btn ${isSelectedMonth ? 'is-active' : ''}`}
+                  onClick={() => handleJumpToMonth(m)}
+                >
+                  <span className="month-tab-name">{m.label}</span>
+                  {m.isNextMonth && <span className="month-badge-tag next-month-badge">Next Month</span>}
+                  {m.isCurrentMonth && <span className="month-badge-tag current-month-badge">This Month</span>}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            className="month-full-cal-btn"
+            onClick={() => setIsCalendarModalOpen(true)}
+            title="Open complete month calendar"
+          >
+            <CalendarDays size={14} />
+            <span>Pick from Calendar</span>
+          </button>
         </div>
 
         <div className={`date-slider-wrapper ${canScrollLeft ? 'has-scroll-left' : ''} ${canScrollRight ? 'has-scroll-right' : ''}`}>
@@ -259,6 +357,7 @@ export function StepDateTime({
               return (
                 <button
                   key={item.dateStr}
+                  data-date={item.dateStr}
                   type="button"
                   role="radio"
                   aria-checked={isSelected}
@@ -537,6 +636,16 @@ export function StepDateTime({
           <ArrowRight size={16} />
         </button>
       </div>
+
+      {/* Full Monthly Calendar Picker Dialog */}
+      <CalendarPickerModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+        selectedDate={selectedDate}
+        onSelectDate={handleSelectDateFromCalendar}
+        availableDates={availableDates}
+        dateAvailabilityMap={dateAvailabilityMap}
+      />
     </div>
   );
 }
