@@ -5,9 +5,12 @@ export function Footer({ onOpenPrivacy, onOpenTerms, onOpenMentors }) {
     <footer className="site-footer">
       <div className="container site-footer-inner">
         <div className="footer-left">
-          <div className="footer-brand-title">TrialClass</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.35rem' }}>
+            <img src="/edunexa-logo.png" alt="EduNexa Logo" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
+            <div className="footer-brand-title" style={{ fontSize: '1.25rem', fontWeight: 800 }}>EduNexa</div>
+          </div>
           <p className="footer-text">
-            1-on-1 Trial Class Scheduling Prototype · Built for demonstration & evaluation.
+            <strong>Your time. Your mentor. Your class.</strong>
           </p>
         </div>
 
@@ -36,9 +39,6 @@ export function Footer({ onOpenPrivacy, onOpenTerms, onOpenMentors }) {
             Demo Mentors
           </button>
         </div>
-      </div>
-      <div className="container footer-disclaimer">
-        <span>Assignment Demonstration — Not an official CodeYoung production service.</span>
       </div>
     </footer>
   );

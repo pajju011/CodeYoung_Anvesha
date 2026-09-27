@@ -59,9 +59,19 @@ export function BookingConfirmation({
             <User size={16} className="text-muted" />
             <span>Mentor:</span>
           </div>
-          <div className="conf-value-col font-semibold">
-            {booking.mentorName}
-            <span className="mentor-title-sub"> — {booking.mentorTitle}</span>
+          <div className="conf-value-col font-semibold" style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+            {booking.mentorImageUrl && (
+              <img
+                src={booking.mentorImageUrl}
+                alt={booking.mentorName}
+                style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-border)', flexShrink: 0 }}
+                loading="lazy"
+              />
+            )}
+            <span>
+              {booking.mentorName}
+              <span className="mentor-title-sub"> — {booking.mentorTitle}</span>
+            </span>
           </div>
         </div>
 
@@ -86,11 +96,13 @@ export function BookingConfirmation({
               type="button"
               className="btn btn-primary btn-sm join-class-btn"
               onClick={() => onJoinDemoClass(booking)}
+              title="Open virtual classroom in a new tab"
             >
               <Video size={15} />
               <span>Join Demo Class</span>
+              <ExternalLink size={13} style={{ marginLeft: 3 }} />
             </button>
-            <span className="class-link-hint">Opens virtual classroom testing room</span>
+            <span className="class-link-hint">Opens live classroom in a new tab</span>
           </div>
         </div>
 

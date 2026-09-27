@@ -101,13 +101,23 @@ export function StepReview({
               <User size={14} />
               <span>Assigned Mentor</span>
             </div>
-            <div className="review-card-primary">{mentor.name}</div>
-            <div className="review-card-secondary">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.4rem' }}>
+              {mentor.imageUrl ? (
+                <img
+                  src={mentor.imageUrl}
+                  alt={mentor.name}
+                  style={{ width: '44px', height: '44px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--color-border)', flexShrink: 0 }}
+                  loading="lazy"
+                />
+              ) : null}
+              <div>
+                <div className="review-card-primary">{mentor.name}</div>
+                <div className="review-card-footnote">{mentor.title} · {mentor.education}</div>
+              </div>
+            </div>
+            <div className="review-card-secondary" style={{ marginTop: '0.5rem' }}>
               <Globe size={15} />
               <span>Mentor Local Time: <strong>{formattedMentorTime}</strong></span>
-            </div>
-            <div className="review-card-footnote">
-              {mentor.title} · {mentor.education}
             </div>
           </div>
         </div>

@@ -84,6 +84,29 @@ export function StepDateTime({
 
   const availableCount = slots.filter((s) => s.isAvailable).length;
 
+  // Find next available date if current date has 0 slots
+  const nextAvailableDate = useMemo(() => {
+    if (availableCount > 0) return null;
+    for (const d of availableDates) {
+      if (d.dateStr === selectedDate) continue;
+      const dSlots = getAvailableSlotsForDate({
+        dateStr: d.dateStr,
+        userTimezone: selectedTimezone,
+        selectedTrackId,
+        bookedSlots,
+      });
+      if (dSlots.some((s) => s.isAvailable)) {
+        return d;
+      }
+    }
+    return null;
+  }, [availableCount, availableDates, selectedDate, selectedTimezone, selectedTrackId, bookedSlots]);
+
+  // Priority waitlist state for edge case when no mentors are available
+  const [showWaitlistForm, setShowWaitlistForm] = useState(false);
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
+
   return (
     <div className="card step-card">
       <div className="card-header">
@@ -182,12 +205,73 @@ export function StepDateTime({
             <p>Finding available times with matched mentors...</p>
           </div>
         ) : availableCount === 0 ? (
-          <div className="empty-state">
-            <AlertCircle size={28} className="text-warning" />
-            <h3 className="empty-state-title">No trial classes are available on this date.</h3>
-            <p className="empty-state-text">
-              All mentors specialized in this track are booked or outside their working hours for this date. Please select another date from the calendar above or try another subject track.
+          <div className="empty-state no-slots-card" style={{ padding: '2rem 1.5rem', textAlign: 'center' }}>
+            <AlertCircle size={32} className="text-warning" style={{ margin: '0 auto 0.75rem' }} />
+            <h3 className="empty-state-title" style={{ fontSize: '1.125rem', marginBottom: '0.5rem' }}>
+              No trial class slots available on this date
+            </h3>
+            <p className="empty-state-text" style={{ maxWidth: '580px', margin: '0 auto 1.25rem' }}>
+              All 10 Codeyoung mentors have reached their daily limit (max 2 trial sessions per mentor per day to ensure personalized 1-on-1 coaching excellence) or are outside working hours for this date.
             </p>
+
+            {nextAvailableDate && (
+              <div style={{ marginBottom: '1.5rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => onSelectDate(nextAvailableDate.dateStr)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <Calendar size={14} />
+                  <span>Jump to Next Available: {nextAvailableDate.dayOfWeek}, {nextAvailableDate.monthName} {nextAvailableDate.dayOfMonth} →</span>
+                </button>
+              </div>
+            )}
+
+            <div className="waitlist-card" style={{ maxWidth: '520px', margin: '0 auto', padding: '1rem 1.25rem', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', textAlign: 'left' }}>
+              <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                Need a specific time or off-peak slot?
+              </div>
+              <p className="text-subtle text-xs" style={{ marginBottom: '0.75rem' }}>
+                Join our priority waitlist. Our academic counselors will coordinate with mentors to open an additional session for you.
+              </p>
+              {waitlistSubmitted ? (
+                <div className="badge badge-success" style={{ padding: '0.5rem 0.75rem', display: 'inline-block' }}>
+                  ✓ You have been added to the priority waitlist! Our counselor will contact you within 2 hours.
+                </div>
+              ) : showWaitlistForm ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (waitlistEmail.trim()) {
+                      setWaitlistSubmitted(true);
+                    }
+                  }}
+                  style={{ display: 'flex', gap: '0.5rem' }}
+                >
+                  <input
+                    type="email"
+                    required
+                    placeholder="Enter parent email address"
+                    className="form-input form-input-sm"
+                    style={{ flex: 1 }}
+                    value={waitlistEmail}
+                    onChange={(e) => setWaitlistEmail(e.target.value)}
+                  />
+                  <button type="submit" className="btn btn-primary btn-sm">
+                    Submit Request
+                  </button>
+                </form>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setShowWaitlistForm(true)}
+                >
+                  Request Custom Time / Join Waitlist
+                </button>
+              )}
+            </div>
           </div>
         ) : (
           <div className="periods-container">

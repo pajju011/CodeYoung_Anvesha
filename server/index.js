@@ -24,7 +24,7 @@ let bookingsStore = [];
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'TrialClass Scheduling API',
+    service: 'EduNexa Scheduling API',
     mentorsCount: MENTORS.length,
     maxDailyCapacityAcrossMentors: MENTORS.length * MAX_CLASSES_PER_MENTOR_PER_DAY,
     currentTimeUtc: new Date().toISOString(),
@@ -212,6 +212,7 @@ app.post('/api/bookings', (req, res) => {
     mentorId: mentor.id,
     mentorName: mentor.name,
     mentorTitle: mentor.title,
+    mentorImageUrl: mentor.imageUrl,
     mentorTimezone: mentor.timezone,
     mentorTimezoneAbbr: mentor.timezoneAbbr,
     mentorLocalTime: confirmationData.mentorLocalTime,
@@ -276,7 +277,7 @@ app.delete('/api/bookings/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[TrialClass API Server] running on http://127.0.0.1:${PORT}`);
+  console.log(`[EduNexa API Server] running on http://127.0.0.1:${PORT}`);
 });
 
 export default app;
