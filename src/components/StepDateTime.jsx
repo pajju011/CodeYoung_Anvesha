@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Calendar, Clock, ArrowLeft, ArrowRight, UserCheck, Sparkles, AlertCircle } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { Calendar, Clock, ArrowLeft, ArrowRight, UserCheck, Sparkles, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { LEARNING_TRACKS } from '../data/subjects';
 import { getTimezoneMeta } from '../data/timezones';
 import { getAvailableSlotsForDate, formatInTimezone } from '../utils/timezoneUtils';
@@ -131,6 +131,41 @@ export function StepDateTime({
   const [waitlistEmail, setWaitlistEmail] = useState('');
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
 
+  // Date picker sliding back & forth controls
+  const dateScrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkDateScroll = useCallback(() => {
+    if (dateScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = dateScrollRef.current;
+      setCanScrollLeft(scrollLeft > 6);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 6);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkDateScroll();
+    window.addEventListener('resize', checkDateScroll);
+    return () => window.removeEventListener('resize', checkDateScroll);
+  }, [checkDateScroll, availableDates]);
+
+
+
+  const handleSlideBack = () => {
+    if (dateScrollRef.current) {
+      dateScrollRef.current.scrollLeft -= 260;
+      setTimeout(checkDateScroll, 350);
+    }
+  };
+
+  const handleSlideForward = () => {
+    if (dateScrollRef.current) {
+      dateScrollRef.current.scrollLeft += 260;
+      setTimeout(checkDateScroll, 350);
+    }
+  };
+
   return (
     <div className="card step-card">
       <div className="card-header">
@@ -165,55 +200,109 @@ export function StepDateTime({
         </div>
       </div>
 
-      {/* Date Carousel / Picker */}
+      {/* Date Carousel / Picker with Sliding Arrows */}
       <div className="date-picker-section">
         <div className="section-subtitle-row">
           <div className="section-subtitle">
             <Calendar size={16} />
             <span>Select Date</span>
           </div>
-          <span className="text-subtle date-hint">Real-time availability across the next 14 days</span>
+          <div className="date-picker-actions">
+            <span className="text-subtle date-hint">Real-time availability across 14 days</span>
+            <div className="date-nav-buttons" role="group" aria-label="Slide dates">
+              <button
+                type="button"
+                className="date-nav-btn"
+                onClick={handleSlideBack}
+                disabled={!canScrollLeft}
+                aria-label="Slide dates back"
+                title="Slide dates back"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                type="button"
+                className="date-nav-btn"
+                onClick={handleSlideForward}
+                disabled={!canScrollRight}
+                aria-label="Slide dates forward"
+                title="Slide dates forward"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="date-scroll-container" role="radiogroup" aria-label="Select class date">
-          {availableDates.map((item) => {
-            const isSelected = selectedDate === item.dateStr;
-            const avail = dateAvailabilityMap[item.dateStr];
-            return (
-              <button
-                key={item.dateStr}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                className={`date-chip ${isSelected ? 'is-selected' : ''}`}
-                onClick={() => {
-                  onSelectDate(item.dateStr);
-                  // Reset slot if changing date
-                  if (selectedSlot && selectedSlot.dateStr !== item.dateStr) {
-                    onSelectSlot(null);
-                  }
-                }}
-              >
-                <span className="date-chip-day">{item.dayOfWeek}</span>
-                <span className="date-chip-num">{item.dayOfMonth}</span>
-                <span className="date-chip-month">{item.monthName}</span>
-                {item.isTomorrow && <span className="date-chip-tag">Tomorrow</span>}
-                {item.isToday && <span className="date-chip-tag">Today</span>}
+        <div className={`date-slider-wrapper ${canScrollLeft ? 'has-scroll-left' : ''} ${canScrollRight ? 'has-scroll-right' : ''}`}>
+          <button
+            type="button"
+            className="date-floating-nav date-floating-prev"
+            onClick={handleSlideBack}
+            disabled={!canScrollLeft}
+            aria-label="Slide dates back"
+            title="Slide back"
+          >
+            <ChevronLeft size={18} />
+          </button>
 
-                {/* Real-time Mentor & Slot Availability Indicator */}
-                {avail && (
-                  <span
-                    className={`date-chip-avail-badge ${
-                      avail.totalSlots === 0 ? 'is-full' : avail.totalSlots <= 3 ? 'is-low' : 'is-open'
-                    }`}
-                    title={`${avail.totalSlots} slots available with ${avail.mentorsCount} certified mentors`}
-                  >
-                    {avail.totalSlots > 0 ? `${avail.totalSlots} slots` : 'Full'}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+          <div
+            ref={dateScrollRef}
+            onScroll={checkDateScroll}
+            className="date-scroll-container"
+            role="radiogroup"
+            aria-label="Select class date"
+          >
+            {availableDates.map((item) => {
+              const isSelected = selectedDate === item.dateStr;
+              const avail = dateAvailabilityMap[item.dateStr];
+              return (
+                <button
+                  key={item.dateStr}
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  className={`date-chip ${isSelected ? 'is-selected' : ''}`}
+                  onClick={() => {
+                    onSelectDate(item.dateStr);
+                    // Reset slot if changing date
+                    if (selectedSlot && selectedSlot.dateStr !== item.dateStr) {
+                      onSelectSlot(null);
+                    }
+                  }}
+                >
+                  <span className="date-chip-day">{item.dayOfWeek}</span>
+                  <span className="date-chip-num">{item.dayOfMonth}</span>
+                  <span className="date-chip-month">{item.monthName}</span>
+                  {item.isTomorrow && <span className="date-chip-tag">Tomorrow</span>}
+                  {item.isToday && <span className="date-chip-tag">Today</span>}
+
+                  {/* Real-time Mentor & Slot Availability Indicator */}
+                  {avail && (
+                    <span
+                      className={`date-chip-avail-badge ${
+                        avail.totalSlots === 0 ? 'is-full' : avail.totalSlots <= 3 ? 'is-low' : 'is-open'
+                      }`}
+                      title={`${avail.totalSlots} slots available with ${avail.mentorsCount} certified mentors`}
+                    >
+                      {avail.totalSlots > 0 ? `${avail.totalSlots} slots` : 'Full'}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            className="date-floating-nav date-floating-next"
+            onClick={handleSlideForward}
+            disabled={!canScrollRight}
+            aria-label="Slide dates forward"
+            title="Slide forward"
+          >
+            <ChevronRight size={18} />
+          </button>
         </div>
       </div>
 

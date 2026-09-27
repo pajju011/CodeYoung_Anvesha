@@ -13,145 +13,226 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
       /* ==========================================================================
-         Anvesha Liquid Wave Preloader: Brand Color Matched & Anti-Blank Screen Guard
+         Anvesha Gooey Liquid Preloader: Matched to loading.webm & Brand Colors
+         Deep Royal Blue #1e40af, Vibrant Blue #2563eb, Warm Orange #ea580c
+         Anti-Blank Screen Guard guarantees 0ms blank screen & smooth reveal
          ========================================================================== */
       #app-preloader {
         position: fixed;
         inset: 0;
         z-index: 999999;
-        background-color: #f8fafc;
+        background: radial-gradient(circle at 50% 45%, #ffffff 0%, #f1f5f9 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         user-select: none;
         overflow: hidden;
-        transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: opacity;
+        transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform;
       }
 
-      #app-preloader.is-zoomed {
+      #app-preloader.is-dismissed {
         opacity: 0;
+        transform: scale(0.98);
         pointer-events: none;
       }
 
-      /* Clean Card matching Anvesha EdTech Design System */
-      .anv-video-card {
+      /* Premium Card matching Anvesha EdTech Design System */
+      .anv-preloader-card {
         position: relative;
         width: 90vw;
-        max-width: 780px;
-        aspect-ratio: 16 / 9.8;
+        max-width: 440px;
         background: #ffffff;
         border-radius: 28px;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
+        box-shadow: 0 25px 60px -15px rgba(30, 64, 175, 0.09), 0 1px 3px rgba(15, 23, 42, 0.04);
+        padding: 2.75rem 2.5rem 2.25rem;
         display: flex;
         flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .anv-content-wrap {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      /* Brand Pill Badge */
+      .anv-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.85rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 9999px;
+        margin-bottom: 1.5rem;
+      }
+
+      .anv-badge-icon {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .anv-badge-text {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #1e40af;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      /* Gooey Loader Stage */
+      .anv-loader-stage {
+        width: 130px;
+        height: 80px;
+        display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2.5rem 3rem;
-        overflow: hidden;
+        position: relative;
+        margin-bottom: 1.25rem;
       }
 
-      /* Content Stage with Explosive Camera Zoom-Through */
-      .anv-video-stage {
+      /* Primary: transparent loading.webm with Anvesha Royal Blue color grading */
+      .anv-loader-video {
         width: 100%;
-        max-width: 640px;
-        display: flex;
-        flex-direction: column;
+        height: 100%;
+        object-fit: contain;
+        filter: hue-rotate(12deg) brightness(0.72) saturate(1.4);
+        mix-blend-mode: multiply;
+      }
+
+      /* Instant CSS fallback if video decoder initializes asynchronously */
+      .anv-css-metaball {
+        display: none;
+        position: absolute;
+        width: 130px;
+        height: 80px;
         align-items: center;
-        transition: transform 0.85s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.75s cubic-bezier(0.19, 1, 0.22, 1), filter 0.75s ease;
-        will-change: transform, opacity, filter;
+        justify-content: center;
+        filter: url(#anv-metaball-filter);
       }
 
-      .is-zoomed .anv-video-stage {
-        transform: scale(7.2);
-        opacity: 0;
-        filter: blur(14px);
+      .anv-meta-dot {
+        position: absolute;
+        border-radius: 50%;
+        background: #1e40af;
       }
 
-      /* Liquid SVG Container */
-      .anv-liquid-svg {
-        width: 100%;
-        height: auto;
-        max-height: 220px;
-        overflow: visible;
+      .anv-dot-left {
+        width: 36px;
+        height: 36px;
+        animation: anvMergeL 1.2s cubic-bezier(0.77, 0, 0.175, 1) infinite alternate;
       }
 
-      /* Dim base layer (light slate) */
-      .anv-icon-dim {
-        opacity: 0.22;
-        filter: grayscale(100%) brightness(0.9);
+      .anv-dot-right {
+        width: 25px;
+        height: 25px;
+        animation: anvMergeR 1.2s cubic-bezier(0.77, 0, 0.175, 1) infinite alternate;
       }
 
-      .anv-text-dim {
+      @keyframes anvMergeL {
+        0% { transform: translateX(-28px); }
+        50% { transform: translateX(5px) scale(1.12); }
+        100% { transform: translateX(28px); }
+      }
+
+      @keyframes anvMergeR {
+        0% { transform: translateX(28px); }
+        50% { transform: translateX(-5px) scale(1.12); }
+        100% { transform: translateX(-28px); }
+      }
+
+      /* Typography */
+      .anv-title {
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        font-size: 88px;
-        font-weight: 900;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #0f172a;
         letter-spacing: -0.025em;
-        fill: #e2e8f0;
+        margin-bottom: 0.25rem;
       }
 
-      .anv-tagline-dim {
+      .anv-tagline {
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        font-size: 13px;
+        font-size: 0.75rem;
         font-weight: 700;
-        letter-spacing: 0.28em;
-        fill: #cbd5e1;
-      }
-
-      /* Luminous filled layer (Anvesha Brand Colors: Deep Royal Blue #1e40af & Orange #f97316) */
-      .anv-icon-bright {
-        filter: drop-shadow(0 6px 16px rgba(30, 64, 175, 0.22));
-      }
-
-      .anv-text-bright {
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        font-size: 88px;
-        font-weight: 900;
-        letter-spacing: -0.025em;
-        fill: url(#anvBrandGradient);
-        filter: drop-shadow(0 8px 24px rgba(30, 64, 175, 0.2));
-      }
-
-      .anv-tagline-bright {
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.28em;
-        fill: #ea580c;
-      }
-
-      /* Horizontal continuous wave movement */
-      .anv-wave-motion {
-        animation: anvWaveSlide 1.6s linear infinite;
-      }
-
-      @keyframes anvWaveSlide {
-        from { transform: translateX(0); }
-        to { transform: translateX(-300px); }
-      }
-
-      /* Loading counter in bottom right */
-      .anv-counter-row {
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 1rem;
-        padding-right: 1.25rem;
-      }
-
-      .anv-counter-text {
-        font-size: 0.875rem;
-        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
         color: #64748b;
-        font-variant-numeric: tabular-nums;
-        letter-spacing: 0.03em;
+        margin-bottom: 1.5rem;
       }
 
-      /* Error recovery alert (if browser network ever halts) */
+      /* Status Pill */
+      .anv-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 1rem;
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 9999px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 1.25rem;
+      }
+
+      .anv-pulse-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #2563eb;
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+        animation: anvPulse 1.6s infinite;
+      }
+
+      @keyframes anvPulse {
+        0% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+        }
+        100% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+        }
+      }
+
+      /* Sleek progress line */
+      .anv-progress-track {
+        width: 100%;
+        height: 4px;
+        background: #f1f5f9;
+        border-radius: 9999px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .anv-progress-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #1e40af, #2563eb, #f97316);
+        border-radius: 9999px;
+        transition: width 0.15s ease-out;
+      }
+
+      /* Error recovery alert */
       .anv-error-recovery {
         display: none;
-        margin-top: 0.75rem;
+        margin-top: 1rem;
         align-items: center;
         gap: 0.5rem;
       }
@@ -169,53 +250,62 @@
     </style>
   </head>
   <body>
-    <!-- Brand-Matched Liquid Wave Preloader (Color-matched to Anvesha) -->
+    <!-- SVG Gooey Filter for instant vector fallback -->
+    <svg width="0" height="0" style="position: absolute; pointer-events: none;" aria-hidden="true">
+      <defs>
+        <filter id="anv-metaball-filter">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="
+            1 0 0 0 0  
+            0 1 0 0 0  
+            0 0 1 0 0  
+            0 0 0 22 -9" result="goo" />
+          <feBlend in="SourceGraphic" in2="goo" />
+        </filter>
+      </defs>
+    </svg>
+
+    <!-- Anvesha Gooey Loader: Matching loading.webm with brand color palette -->
     <div id="app-preloader" aria-hidden="true">
-      <div class="anv-video-card">
-        <div class="anv-video-stage" id="anvStage">
-          <svg viewBox="0 0 600 220" class="anv-liquid-svg">
-            <defs>
-              <!-- Anvesha Signature Brand Palette: Deep Royal Blue to Electric Azure to Radiant Orange -->
-              <linearGradient id="anvBrandGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#1e40af" />
-                <stop offset="55%" stop-color="#2563eb" />
-                <stop offset="100%" stop-color="#ea580c" />
-              </linearGradient>
+      <div class="anv-preloader-card">
+        <div class="anv-content-wrap">
+          <div class="anv-badge">
+            <img src="/anvesha-icon.png" alt="" class="anv-badge-icon" />
+            <span class="anv-badge-text">Trial Class Portal</span>
+          </div>
 
-              <clipPath id="anvWaveClip">
-                <!-- Group animated vertically from Y=230 (0%) to Y=-30 (100%) -->
-                <g id="anvWaveGroup" transform="translate(0, 230)">
-                  <path
-                    class="anv-wave-motion"
-                    d="M 0 0 Q 75 14, 150 0 T 300 0 T 450 0 T 600 0 T 750 0 T 900 0 V 360 H 0 Z"
-                    fill="#1e40af"
-                  />
-                </g>
-              </clipPath>
-            </defs>
+          <div class="anv-loader-stage">
+            <video
+              id="anvLoaderVideo"
+              class="anv-loader-video"
+              src="/loading.webm"
+              autoplay
+              loop
+              muted
+              playsinline
+              onerror="document.getElementById('anvCssFallback').style.display='flex'; this.style.display='none';"
+            ></video>
 
-            <!-- Dim Base Layer (light slate) -->
-            <g>
-              <image href="/anvesha-icon.png" x="268" y="10" width="64" height="64" class="anv-icon-dim" />
-              <text x="300" y="148" text-anchor="middle" dominant-baseline="middle" class="anv-text-dim">Anvesha</text>
-              <text x="300" y="194" text-anchor="middle" dominant-baseline="middle" class="anv-tagline-dim">DISCOVER • CONNECT • LEARN</text>
-            </g>
+            <div id="anvCssFallback" class="anv-css-metaball">
+              <div class="anv-meta-dot anv-dot-left"></div>
+              <div class="anv-meta-dot anv-dot-right"></div>
+            </div>
+          </div>
 
-            <!-- Luminous Filled Layer (Brand Blue & Orange Gradient) -->
-            <g clip-path="url(#anvWaveClip)">
-              <image href="/anvesha-icon.png" x="268" y="10" width="64" height="64" class="anv-icon-bright" />
-              <text x="300" y="148" text-anchor="middle" dominant-baseline="middle" class="anv-text-bright">Anvesha</text>
-              <text x="300" y="194" text-anchor="middle" dominant-baseline="middle" class="anv-tagline-bright">DISCOVER • CONNECT • LEARN</text>
-            </g>
-          </svg>
+          <h1 class="anv-title">Anvesha</h1>
+          <div class="anv-tagline">Discover • Connect • Learn</div>
 
-          <!-- Counter in bottom right matching video: loading... XX % -->
-          <div class="anv-counter-row">
-            <span class="anv-counter-text" id="anvCounterLabel">loading... 1 %</span>
+          <div class="anv-status-pill">
+            <span class="anv-pulse-dot"></span>
+            <span id="anvStatusText">Connecting live trial classroom...</span>
+          </div>
+
+          <div class="anv-progress-track">
+            <div class="anv-progress-bar" id="anvProgressBar"></div>
           </div>
 
           <div class="anv-error-recovery" id="anvErrorRecovery">
-            <span style="font-size: 0.8125rem; color: #ef4444;">Connecting to application...</span>
+            <span style="font-size: 0.8125rem; color: #ef4444;">Taking longer than expected...</span>
             <button type="button" class="anv-reload-btn" onclick="window.location.reload(true)">Reload</button>
           </div>
         </div>
@@ -226,54 +316,65 @@
     <script type="module" src="/src/main.jsx"></script>
     <script>
       (function() {
-        var waveGroup = document.getElementById('anvWaveGroup');
-        var counterLabel = document.getElementById('anvCounterLabel');
         var preloader = document.getElementById('app-preloader');
-        if (!waveGroup || !counterLabel || !preloader) return;
+        var progressBar = document.getElementById('anvProgressBar');
+        var statusText = document.getElementById('anvStatusText');
+        var recovery = document.getElementById('anvErrorRecovery');
+        if (!preloader || !progressBar) return;
 
-        var startY = 230;
-        var endY = -30;
-        var totalDist = startY - endY;
-        var duration = 2100; // 2.1s fill time
         var startTime = performance.now();
+        var minDisplayMs = 1350; // Smooth loading cycle from loading.webm
+        var isDismissed = false;
 
-        function step(now) {
+        function updateProgress(now) {
+          if (isDismissed) return;
           var elapsed = now - startTime;
-          var progress = Math.min(1, elapsed / duration);
-          var percent = Math.min(100, Math.round(progress * 100));
+          var pct = Math.min(95, Math.round((elapsed / minDisplayMs) * 92));
+          progressBar.style.width = pct + '%';
 
-          var currentY = startY - (progress * totalDist);
-          waveGroup.setAttribute('transform', 'translate(0, ' + currentY + ')');
-          counterLabel.textContent = 'loading... ' + percent + ' %';
+          // Check if React has mounted into #root
+          var isMounted = !!(window.__ANVESHA_APP_MOUNTED__ || (document.getElementById('root') && document.getElementById('root').children.length > 0));
 
-          if (progress < 1) {
-            requestAnimationFrame(step);
+          if (isMounted && elapsed >= minDisplayMs) {
+            dismissPreloader();
           } else {
-            // Anti-Blank Screen Guard: Only dissolve when React has actually mounted into #root
-            function finishReveal() {
-              var isMounted = window.__ANVESHA_APP_MOUNTED__ || (document.getElementById('root') && document.getElementById('root').children.length > 0);
-              if (isMounted) {
-                setTimeout(function() {
-                  preloader.classList.add('is-zoomed');
-                  setTimeout(function() {
-                    if (preloader && preloader.parentNode) preloader.remove();
-                  }, 800);
-                }, 180);
-              } else {
-                // Wait for React mount signal before opening the curtain
-                setTimeout(finishReveal, 100);
-              }
-            }
-            finishReveal();
+            requestAnimationFrame(updateProgress);
           }
         }
 
-        requestAnimationFrame(step);
+        function dismissPreloader() {
+          if (isDismissed) return;
+          isDismissed = true;
+          progressBar.style.width = '100%';
+          if (statusText) statusText.textContent = 'Welcome to Anvesha!';
 
-        // Safety listener: if script error occurs, display reload button
+          setTimeout(function() {
+            preloader.classList.add('is-dismissed');
+            setTimeout(function() {
+              if (preloader && preloader.parentNode) {
+                preloader.remove();
+              }
+            }, 550);
+          }, 150);
+        }
+
+        requestAnimationFrame(updateProgress);
+
+        // Safety watchdog: After 4s, reveal reload option if not mounted
+        setTimeout(function() {
+          var isMounted = !!(window.__ANVESHA_APP_MOUNTED__ || (document.getElementById('root') && document.getElementById('root').children.length > 0));
+          if (!isMounted && recovery) {
+            recovery.style.display = 'flex';
+          }
+        }, 4000);
+
+        // Hard fallback: never leave user stuck indefinitely
+        setTimeout(function() {
+          dismissPreloader();
+        }, 6000);
+
         window.addEventListener('error', function() {
-          var rec = document.getElementById('anvErrorRecovery');
-          if (rec) rec.style.display = 'flex';
+          if (recovery) recovery.style.display = 'flex';
         });
       })();
     </script>
