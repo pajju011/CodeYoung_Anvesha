@@ -1,6 +1,18 @@
 import { DEMO_MENTORS } from '../data/mentors';
 import { getTimezoneMeta } from '../data/timezones';
 
+const FORMATTER_CACHE = new Map();
+
+export function getCachedFormatter(locale = 'en-US', options = {}) {
+  const key = `${locale}_${options.timeZone || ''}_${options.hour || ''}_${options.minute || ''}_${options.second || ''}_${options.hour12 ?? ''}_${options.weekday || ''}_${options.month || ''}_${options.day || ''}_${options.year || ''}_${options.timeZoneName || ''}`;
+  let fmt = FORMATTER_CACHE.get(key);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat(locale, options);
+    FORMATTER_CACHE.set(key, fmt);
+  }
+  return fmt;
+}
+
 /**
  * Format a Date object or ISO string in a specific IANA timezone
  */
@@ -10,7 +22,7 @@ export function formatInTimezone(dateInput, timeZone, formatType = 'full') {
 
   try {
     if (formatType === 'time') {
-      return new Intl.DateTimeFormat('en-US', {
+      return getCachedFormatter('en-US', {
         timeZone,
         hour: 'numeric',
         minute: '2-digit',
@@ -19,7 +31,7 @@ export function formatInTimezone(dateInput, timeZone, formatType = 'full') {
     }
 
     if (formatType === 'time-with-abbr') {
-      const timeStr = new Intl.DateTimeFormat('en-US', {
+      const timeStr = getCachedFormatter('en-US', {
         timeZone,
         hour: 'numeric',
         minute: '2-digit',
@@ -30,7 +42,7 @@ export function formatInTimezone(dateInput, timeZone, formatType = 'full') {
     }
 
     if (formatType === 'date-long') {
-      return new Intl.DateTimeFormat('en-US', {
+      return getCachedFormatter('en-US', {
         timeZone,
         weekday: 'long',
         year: 'numeric',
@@ -40,7 +52,7 @@ export function formatInTimezone(dateInput, timeZone, formatType = 'full') {
     }
 
     if (formatType === 'date-short') {
-      return new Intl.DateTimeFormat('en-US', {
+      return getCachedFormatter('en-US', {
         timeZone,
         weekday: 'short',
         month: 'short',
@@ -49,7 +61,7 @@ export function formatInTimezone(dateInput, timeZone, formatType = 'full') {
     }
 
     if (formatType === 'full') {
-      return new Intl.DateTimeFormat('en-US', {
+      return getCachedFormatter('en-US', {
         timeZone,
         weekday: 'long',
         year: 'numeric',
@@ -80,7 +92,7 @@ export function createUtcDateFromLocal(dateStr, timeStr, userTimezone) {
   const candidateUtc = new Date(Date.UTC(year, month - 1, day, hours, minutes, 0));
 
   // Check what time that UTC date yields in the user's timezone:
-  const formatter = new Intl.DateTimeFormat('en-US', {
+  const formatter = getCachedFormatter('en-US', {
     timeZone: userTimezone,
     year: 'numeric',
     month: 'numeric',
@@ -140,14 +152,14 @@ export function getDstDetails(timeZone, dateObj = new Date()) {
     const julDate = new Date(Date.UTC(year, 6, 1));
 
     const getOffset = (d) => {
-      const parts = new Intl.DateTimeFormat('en-US', {
+      const parts = getCachedFormatter('en-US', {
         timeZone,
         timeZoneName: 'shortOffset',
       }).formatToParts(d);
       return parts.find((p) => p.type === 'timeZoneName')?.value || '';
     };
 
-    const currentTzName = new Intl.DateTimeFormat('en-US', {
+    const currentTzName = getCachedFormatter('en-US', {
       timeZone,
       timeZoneName: 'short',
     }).formatToParts(dateObj).find((p) => p.type === 'timeZoneName')?.value || '';
@@ -181,11 +193,19 @@ export function getDstDetails(timeZone, dateObj = new Date()) {
   }
 }
 
+const SLOTS_CACHE = new Map();
+const DAY_MAP = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+
+export function clearSlotsCache() {
+  SLOTS_CACHE.clear();
+}
+
 /**
  * Calculates how many bookings a mentor already has on a specific calendar day in their local timezone.
  * Enforces requirement: "Mentors have at most 2 demo classes a day."
  */
 export function getMentorBookingsCountOnDate(mentorId, mentorTimezone, targetDateUtc, bookedSlots = []) {
+  if (!bookedSlots || bookedSlots.length === 0) return 0;
   const targetDateInMentorZone = formatInTimezone(targetDateUtc, mentorTimezone, 'date-short');
 
   return bookedSlots.filter((b) => {
@@ -207,6 +227,10 @@ export function getAvailableSlotsForDate({
   selectedTrackId = null,
   bookedSlots = [],
 }) {
+  const cacheKey = `${dateStr}_${userTimezone}_${selectedTrackId || 'all'}_${bookedSlots ? bookedSlots.length : 0}`;
+  const cached = SLOTS_CACHE.get(cacheKey);
+  if (cached) return cached;
+
   const results = [];
   const slotMentorAssignmentCount = {};
 
@@ -232,37 +256,37 @@ export function getAvailableSlotsForDate({
     // Find mentors working at this UTC moment
     const matchingMentors = DEMO_MENTORS.filter((mentor) => {
       // 1. Check if mentor is already booked for this UTC timestamp
-      const isAlreadyBooked = bookedSlots.some(
-        (b) => b.mentorId === mentor.id && Math.abs(new Date(b.slotUtc).getTime() - utcDate.getTime()) < 30 * 60 * 1000
-      );
-      if (isAlreadyBooked) return false;
+      if (bookedSlots && bookedSlots.length > 0) {
+        const isAlreadyBooked = bookedSlots.some(
+          (b) => b.mentorId === mentor.id && Math.abs(new Date(b.slotUtc).getTime() - utcDate.getTime()) < 30 * 60 * 1000
+        );
+        if (isAlreadyBooked) return false;
 
-      // 2. Enforce constraint: "Mentors have at most 2 demo classes a day"
-      const dailyCount = getMentorBookingsCountOnDate(
-        mentor.id,
-        mentor.timezone,
-        utcDate,
-        bookedSlots
-      );
-      if (dailyCount >= 2) {
-        return false;
+        // 2. Enforce constraint: "Mentors have at most 2 demo classes a day"
+        const dailyCount = getMentorBookingsCountOnDate(
+          mentor.id,
+          mentor.timezone,
+          utcDate,
+          bookedSlots
+        );
+        if (dailyCount >= 2) {
+          return false;
+        }
       }
 
-      // 3. Mentor local time calculation
-      const mentorHourStr = new Intl.DateTimeFormat('en-US', {
+      // 3. Mentor local time calculation using cached formatters
+      const mentorHourStr = getCachedFormatter('en-US', {
         timeZone: mentor.timezone,
         hour: 'numeric',
         hour12: false,
       }).format(utcDate);
 
-      const mentorDayOfWeekStr = new Intl.DateTimeFormat('en-US', {
+      const mentorDayOfWeekStr = getCachedFormatter('en-US', {
         timeZone: mentor.timezone,
-        weekday: 'narrow',
+        weekday: 'short',
       }).format(utcDate);
 
-      // Map day of week
-      const mentorDayOfWeek = new Date(utcDate.toLocaleString('en-US', { timeZone: mentor.timezone })).getDay();
-
+      const mentorDayOfWeek = DAY_MAP[mentorDayOfWeekStr] ?? 0;
       const mentorHour = parseInt(mentorHourStr, 10);
 
       // Check working days
@@ -323,5 +347,6 @@ export function getAvailableSlotsForDate({
     });
   }
 
+  SLOTS_CACHE.set(cacheKey, results);
   return results;
 }

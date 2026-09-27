@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Globe, Clock, Search, Check, MapPin, RotateCcw } from 'lucide-react';
 import { TIMEZONE_LIST, getTimezoneMeta, detectUserTimezone } from '../data/timezones';
 import { formatInTimezone, getDstDetails } from '../utils/timezoneUtils';
@@ -11,22 +11,25 @@ export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
   const detectedTz = detectUserTimezone();
   const detectedMeta = getTimezoneMeta(detectedTz);
 
-  // Update live clock every second
+  // Update live clock every 15s (minutes-level display without continuous per-second CPU churn)
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const timer = setInterval(() => setCurrentTime(new Date()), 15000);
     return () => clearInterval(timer);
   }, []);
 
-  const filteredTimezones = TIMEZONE_LIST.filter((tz) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      tz.label.toLowerCase().includes(query) ||
-      tz.city.toLowerCase().includes(query) ||
-      tz.abbr.toLowerCase().includes(query) ||
-      tz.region.toLowerCase().includes(query) ||
-      tz.id.toLowerCase().includes(query)
-    );
-  });
+  const filteredTimezones = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return TIMEZONE_LIST;
+    return TIMEZONE_LIST.filter((tz) => {
+      return (
+        tz.label.toLowerCase().includes(query) ||
+        tz.city.toLowerCase().includes(query) ||
+        tz.abbr.toLowerCase().includes(query) ||
+        tz.region.toLowerCase().includes(query) ||
+        tz.id.toLowerCase().includes(query)
+      );
+    });
+  }, [searchQuery]);
 
   const selectedMeta = getTimezoneMeta(selectedTimezone);
   const formattedCurrentTime = formatInTimezone(currentTime, selectedTimezone, 'time');

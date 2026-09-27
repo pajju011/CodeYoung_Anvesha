@@ -27,7 +27,7 @@
         justify-content: center;
         user-select: none;
         overflow: hidden;
-        transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         will-change: opacity, transform;
       }
 
@@ -323,7 +323,7 @@
         if (!preloader || !progressBar) return;
 
         var startTime = performance.now();
-        var minDisplayMs = 1350; // Smooth loading cycle from loading.webm
+        var minDisplayMs = 380; // Fast initial load without perceived lag
         var isDismissed = false;
 
         function updateProgress(now) {
@@ -348,14 +348,20 @@
           progressBar.style.width = '100%';
           if (statusText) statusText.textContent = 'Welcome to Anvesha!';
 
+          // Immediately pause preloader video to save GPU/CPU cycles
+          var vid = document.getElementById('anvLoaderVideo');
+          if (vid) {
+            try { vid.pause(); } catch(e) {}
+          }
+
           setTimeout(function() {
             preloader.classList.add('is-dismissed');
             setTimeout(function() {
               if (preloader && preloader.parentNode) {
                 preloader.remove();
               }
-            }, 550);
-          }, 150);
+            }, 400);
+          }, 80);
         }
 
         requestAnimationFrame(updateProgress);

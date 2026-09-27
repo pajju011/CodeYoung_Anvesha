@@ -81,16 +81,7 @@ export function StepDateTime({
     }
   }, [selectedDate, availableDates, onSelectDate]);
 
-  // Simulate realistic slot lookup with state
-  useEffect(() => {
-    setIsLoadingSlots(true);
-    const timer = setTimeout(() => {
-      setIsLoadingSlots(false);
-    }, 180);
-    return () => clearTimeout(timer);
-  }, [selectedDate, selectedTrackId, selectedTimezone]);
-
-  // Compute slots for current date & timezone
+  // Slots are instantly computed and cached with zero artificial latency
   const slots = useMemo(() => {
     if (!selectedDate) return [];
     return getAvailableSlotsForDate({
@@ -166,33 +157,36 @@ export function StepDateTime({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
+  const scrollCheckTickRef = useRef(null);
   const checkDateScroll = useCallback(() => {
-    if (dateScrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = dateScrollRef.current;
-      setCanScrollLeft(scrollLeft > 6);
-      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 6);
-    }
+    if (scrollCheckTickRef.current) return;
+    scrollCheckTickRef.current = requestAnimationFrame(() => {
+      scrollCheckTickRef.current = null;
+      if (dateScrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = dateScrollRef.current;
+        const newLeft = scrollLeft > 6;
+        const newRight = scrollLeft + clientWidth < scrollWidth - 6;
+        setCanScrollLeft((prev) => (prev !== newLeft ? newLeft : prev));
+        setCanScrollRight((prev) => (prev !== newRight ? newRight : prev));
+      }
+    });
   }, []);
 
   useEffect(() => {
     checkDateScroll();
-    window.addEventListener('resize', checkDateScroll);
+    window.addEventListener('resize', checkDateScroll, { passive: true });
     return () => window.removeEventListener('resize', checkDateScroll);
   }, [checkDateScroll, availableDates]);
 
-
-
   const handleSlideBack = () => {
     if (dateScrollRef.current) {
-      dateScrollRef.current.scrollLeft -= 260;
-      setTimeout(checkDateScroll, 350);
+      dateScrollRef.current.scrollBy({ left: -280, behavior: 'smooth' });
     }
   };
 
   const handleSlideForward = () => {
     if (dateScrollRef.current) {
-      dateScrollRef.current.scrollLeft += 260;
-      setTimeout(checkDateScroll, 350);
+      dateScrollRef.current.scrollBy({ left: 280, behavior: 'smooth' });
     }
   };
 
