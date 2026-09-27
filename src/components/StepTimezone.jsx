@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Clock, Search, Check, Info } from 'lucide-react';
+import { Globe, Clock, Search, Check } from 'lucide-react';
 import { TIMEZONE_LIST, getTimezoneMeta } from '../data/timezones';
 import { formatInTimezone, getDstDetails } from '../utils/timezoneUtils';
 
@@ -120,13 +120,6 @@ export function StepTimezone({ selectedTimezone, onSelectTimezone, onNext }) {
           <p>No timezones match "{searchQuery}". Try searching for a city name or region.</p>
         </div>
       )}
-
-      <div className="alert alert-info tz-notice">
-        <Info size={18} className="flex-shrink-0" />
-        <div>
-          <strong>Automatic Conversion:</strong> All class dates and slots in the following steps will be calculated in your local time ({selectedMeta.abbr}). Mentors will see the corresponding time in their local timezone.
-        </div>
-      </div>
 
       <div className="step-actions">
         <div></div>

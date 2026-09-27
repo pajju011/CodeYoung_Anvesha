@@ -8,11 +8,11 @@ export function HeroSection({ onStartBooking, isBookingActive }) {
         <div className="hero-content">
           <div className="hero-badge">
             <span className="hero-badge-dot"></span>
-            EduNexa 1-on-1 Interactive Trial Class
+            Anvesha 1-on-1 Interactive Trial Class
           </div>
-          <h1 className="hero-headline">Book a Free Trial Class with EduNexa</h1>
+          <h1 className="hero-headline">Book a Free Trial Class with Anvesha</h1>
           <p className="hero-supporting">
-            <strong>Your time. Your mentor. Your class.</strong> Choose a convenient time for your child and we'll match you with a certified educator in your timezone.
+            <strong>Discover. Connect. Learn.</strong> Choose a convenient time for your child and we'll match you with a certified educator in your timezone.
           </p>
 
           <div className="hero-highlights">

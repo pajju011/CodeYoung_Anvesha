@@ -1,5 +1,5 @@
-# EduNexa — 1-on-1 Trial Class Appointment-Booking System
-> **Your time. Your mentor. Your class.**
+# Anvesha — 1-on-1 Trial Class Appointment-Booking System
+> **Discover. Connect. Learn.**
 
 A full-stack, production-grade appointment booking platform built for 1-on-1 trial class experiences (Codeyoung engineering assignment). The system enables parents to select convenient time slots, coordinates cross-timezone schedules between international parents (US/UK) and educators (India), strictly enforces educator capacity limits, handles Daylight Saving Time (DST) shifts, and automatically dispatches live classroom links and simulated calendar invitations.
 

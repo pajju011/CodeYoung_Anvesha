@@ -24,7 +24,7 @@ let bookingsStore = [];
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'EduNexa Scheduling API',
+    service: 'Anvesha Scheduling API',
     mentorsCount: MENTORS.length,
     maxDailyCapacityAcrossMentors: MENTORS.length * MAX_CLASSES_PER_MENTOR_PER_DAY,
     currentTimeUtc: new Date().toISOString(),
@@ -277,7 +277,7 @@ app.delete('/api/bookings/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[EduNexa API Server] running on http://127.0.0.1:${PORT}`);
+  console.log(`[Anvesha API Server] running on http://127.0.0.1:${PORT}`);
 });
 
 export default app;

@@ -19,16 +19,16 @@ export function Header({
           type="button"
           className="brand-logo-btn"
           onClick={onResetToNewBooking}
-          title="EduNexa — Return to Booking"
+          title="Anvesha — Return to Booking"
         >
           <img
-            src="/edunexa-logo.png"
-            alt="EduNexa"
+            src="/anvesha-icon.png"
+            alt="Anvesha"
             className="brand-logo-image"
           />
           <div className="brand-text-group">
-            <span className="brand-title">EduNexa</span>
-            <span className="brand-sub">Your time. Your mentor. Your class.</span>
+            <span className="brand-title">Anvesha</span>
+            <span className="brand-sub">Discover. Connect. Learn.</span>
           </div>
         </button>
 
