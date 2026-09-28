@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, User, Mail, Phone, BookOpen, AlertCircle, HelpCircle, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, User, Mail, Phone, BookOpen, AlertCircle, HelpCircle } from 'lucide-react';
 import { LEARNING_TRACKS } from '../data/subjects';
 
 export function StepDetails({
@@ -75,19 +75,6 @@ export function StepDetails({
         <p className="step-desc">
           Provide your contact details so your mentor can prepare age-appropriate materials and share the live classroom link.
         </p>
-      </div>
-
-      {/* Customer Data Privacy Assurance Banner */}
-      <div className="privacy-security-notice" role="note" aria-label="Customer privacy guarantee">
-        <ShieldCheck size={20} className="privacy-security-icon flex-shrink-0" />
-        <div className="privacy-security-content">
-          <div className="privacy-security-title">
-            Private & Confidential Booking Session
-          </div>
-          <div className="privacy-security-sub">
-            Your contact details are strictly confidential, securely handled, and never exposed or pre-filled for any other visitor or browser session.
-          </div>
-        </div>
       </div>
 
       <div className="form-sections-grid">

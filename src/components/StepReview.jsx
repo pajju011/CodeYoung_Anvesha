@@ -13,7 +13,7 @@ export function StepReview({
   onOpenPrivacyModal,
   onOpenTermsModal,
 }) {
-  const [agreed, setAgreed] = useState(true);
+  const [agreed, setAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState(null);
 
