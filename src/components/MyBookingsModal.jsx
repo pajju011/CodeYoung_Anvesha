@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, User, Globe, Video, Download, Trash2, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
+import { X, Calendar, Clock, User, Globe, Video, Download, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { downloadIcsFile } from '../utils/calendarUtils';
 import { formatInTimezone } from '../utils/timezoneUtils';
 
@@ -44,15 +44,6 @@ export function MyBookingsModal({
         </div>
 
         <div className="modal-body">
-          {bookings.length > 0 && (
-            <div className="privacy-device-note">
-              <ShieldCheck size={16} className="text-success flex-shrink-0" />
-              <span>
-                <strong>Shared Device Privacy:</strong> These sessions are stored locally in your browser. Personal details are never visible or prefilled for other users.
-              </span>
-            </div>
-          )}
-
           {bookings.length === 0 ? (
             <div className="empty-state" style={{ padding: '2rem 1rem' }}>
               <Calendar size={36} className="text-subtle" />
@@ -66,6 +57,13 @@ export function MyBookingsModal({
               {bookings.map((booking) => {
                 const isCancelled = booking.status === 'cancelled';
                 const formattedDate = formatInTimezone(booking.slotUtc, booking.userTimezone, 'date-long');
+
+                // Requirement 1: Calculate mentor's local time in India accurately
+                const mentorTz = booking.mentorTimezone || 'Asia/Kolkata';
+                const mentorLocalTime = formatInTimezone(booking.slotUtc, mentorTz, 'time-with-abbr');
+
+                // Detect DST status for user timezone
+                const isDst = booking.userTimezoneAbbr && (booking.userTimezoneAbbr.includes('DT') || booking.userTimezoneAbbr.includes('BST'));
 
                 return (
                   <div
@@ -84,29 +82,35 @@ export function MyBookingsModal({
 
                     <div className="booking-item-details-grid">
                       <div className="booking-info-cell">
-                        <span className="cell-label">Date & Your Time</span>
+                        <span className="cell-label">Date & Parent Local Time</span>
                         <div className="cell-val">
                           <Clock size={14} className="text-primary" />
                           <strong>{booking.slotLabel} ({booking.userTimezoneAbbr})</strong>
                         </div>
                         <div className="cell-sub">{formattedDate}</div>
+                        {isDst && (
+                          <span className="badge badge-warning text-xs mt-1" title="Daylight Saving Time is active for this region">
+                            DST Active ({booking.userTimezoneAbbr})
+                          </span>
+                        )}
                       </div>
 
                       <div className="booking-info-cell">
-                        <span className="cell-label">Assigned Mentor</span>
+                        <span className="cell-label">Assigned Mentor & Local Time</span>
                         <div className="cell-val">
                           <User size={14} />
                           <span>{booking.mentorName}</span>
                         </div>
                         <div className="cell-sub">
-                          Mentor local: {booking.mentorTimeStr || 'IST'}
+                          <strong>India Local:</strong> {mentorLocalTime || 'IST'}
                         </div>
                       </div>
 
                       <div className="booking-info-cell">
-                        <span className="cell-label">Student</span>
+                        <span className="cell-label">Student Details</span>
                         <div className="cell-val font-semibold">{booking.studentName}</div>
-                        <div className="cell-sub">Age: {booking.studentAgeGroup}</div>
+                        <div className="cell-sub">Age: {booking.studentAgeGroup || 'Ages 9–11'}</div>
+                        <span className="text-subtle text-xs">Level: {booking.studentExperience || 'Beginner'}</span>
                       </div>
                     </div>
 

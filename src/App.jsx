@@ -18,6 +18,7 @@ import { detectUserTimezone, getTimezoneMeta } from './data/timezones';
 import { LEARNING_TRACKS } from './data/subjects';
 import { getStoredBookings, saveBooking, cancelStoredBooking, clearAllStoredBookings } from './utils/storageUtils';
 import { submitBooking, cancelBookingApi } from './services/api';
+import { clearSlotsCache } from './utils/timezoneUtils';
 
 const BLANK_FORM_DATA = {
   parentName: '',
@@ -56,20 +57,25 @@ export function App() {
   const [policyModalType, setPolicyModalType] = useState(null);
   const [demoClassroomBooking, setDemoClassroomBooking] = useState(null);
 
-  // Check if opened as dedicated classroom in a new tab: ?view=classroom&id=...
+  // Check if opened as dedicated classroom in a new tab: ?view=classroom&id=...&role=...
   const urlParams = new URLSearchParams(window.location.search);
   const isClassroomTab = urlParams.get('view') === 'classroom';
   const classroomId = urlParams.get('id');
+  const classroomRole = urlParams.get('role') || 'parent';
 
   // Load existing bookings on mount
   useEffect(() => {
     const stored = getStoredBookings();
     setBookings(stored);
+    if (urlParams.get('step') === '5' && stored.length > 0) {
+      setConfirmedBooking(stored[0]);
+      setCurrentStep(5);
+    }
   }, []);
 
-  const handleJoinDemoClass = (booking) => {
-    // Opens in a dedicated full new browser tab
-    window.open(`/?view=classroom&id=${booking.id}`, '_blank');
+  const handleJoinDemoClass = (booking, role = 'parent') => {
+    // Opens in a dedicated full new browser tab with parent or mentor role
+    window.open(`/?view=classroom&id=${booking.id}&role=${role}`, '_blank');
   };
 
   const handleFormChange = (field, value) => {
@@ -94,9 +100,13 @@ export function App() {
     const track = LEARNING_TRACKS.find((t) => t.id === selectedTrackId) || LEARNING_TRACKS[0];
     const mentor = selectedSlot.primaryMentor;
     const refCode = `CY-${Math.floor(10000 + Math.random() * 90000)}`;
+    const bookingId = `booking_${Date.now()}`;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const parentClassroomUrl = `${origin}/?view=classroom&id=${bookingId}&role=parent`;
+    const mentorClassroomUrl = `${origin}/?view=classroom&id=${bookingId}&role=mentor`;
 
     const bookingPayload = {
-      id: `booking_${Date.now()}`,
+      id: bookingId,
       referenceCode: refCode,
       slotUtc: selectedSlot.utcDate.toISOString(),
       slotLabel: selectedSlot.label,
@@ -118,13 +128,16 @@ export function App() {
       studentAge: formData.studentAge,
       studentExperience: formData.studentExperience,
       studentGoals: formData.studentGoals,
-      classroomUrl: `https://classroom.codeyoung.demo/live/${refCode}`,
+      classroomUrl: parentClassroomUrl,
+      parentClassroomUrl,
+      mentorClassroomUrl,
       status: 'confirmed',
       createdAt: new Date().toISOString(),
     };
 
     try {
       const confirmed = await submitBooking(bookingPayload);
+      clearSlotsCache();
       const allBookings = getStoredBookings();
       setBookings(allBookings);
       setConfirmedBooking(confirmed);
@@ -134,6 +147,7 @@ export function App() {
       console.error('Booking failed:', err);
       // Fallback
       saveBooking(bookingPayload);
+      clearSlotsCache();
       setBookings(getStoredBookings());
       setConfirmedBooking(bookingPayload);
       setCurrentStep(5);
@@ -143,6 +157,7 @@ export function App() {
 
   const handleCancelBooking = async (bookingId) => {
     const updated = await cancelBookingApi(bookingId);
+    clearSlotsCache();
     setBookings(updated);
     if (confirmedBooking && confirmedBooking.id === bookingId) {
       setConfirmedBooking((prev) => ({ ...prev, status: 'cancelled' }));
@@ -191,6 +206,7 @@ export function App() {
       <DemoClassroomModal
         booking={targetBooking}
         isStandalonePage={true}
+        role={classroomRole}
         onClose={() => {
           if (window.opener) {
             window.close();

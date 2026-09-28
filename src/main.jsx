@@ -4,6 +4,8 @@ import './index.css'
 import App from './App.jsx'
 import { ErrorBoundary } from './components/ErrorBoundary.jsx'
 
+window.__ANVESHA_APP_MOUNTED__ = true;
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>

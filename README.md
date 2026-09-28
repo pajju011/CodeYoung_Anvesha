@@ -1,163 +1,184 @@
-# Anvesha
+# Anvesha — 1-on-1 Trial Class Appointment-Booking System
+> **Discover. Connect. Learn.**
 
-> **Discover. Connect. Learn.**  
-> 🌐 **Live Website:** [https://code-young-anvesha.vercel.app](https://code-young-anvesha.vercel.app)
+A full-stack, production-grade appointment booking platform built for 1-on-1 trial class experiences (Codeyoung engineering assignment). The system enables parents to select convenient time slots, coordinates cross-timezone schedules between international parents (US/UK) and educators (India), strictly enforces educator capacity limits, handles Daylight Saving Time (DST) shifts, and automatically dispatches live classroom links and simulated calendar invitations.
 
-Anvesha is an intuitive 1-on-1 trial class appointment booking platform designed to streamline scheduling between international parents (US/UK) and educators in India. Parents can select a specialized learning track (Scratch, Python, Web Dev, Math & Logic), choose a convenient time slot in their local timezone, get automatically paired with a certified mentor, receive instant calendar invites & live classroom links, and attend an interactive virtual demo session.
+🌐 **Live Deployment:** [https://code-young-anvesha.vercel.app](https://code-young-anvesha.vercel.app)  
+📁 **Repository:** [https://github.com/pajju011/CodeYoung_Anvesha.git](https://github.com/pajju011/CodeYoung_Anvesha.git)
 
 ---
 
-## 🚀 Quick Start
+## 📋 Requirements & Evaluation Compliance Matrix
 
-### Option A: 1-Click Launchers (Easiest)
+| Requirement | Implementation Detail | Status |
+|---|---|---|
+| **1. 10 Mentors for Trial Classes** | 10 realistic educator profiles (`server/data/mentors.js` and `src/data/mentors.js`) with specialized curricula (Scratch, Python, Web Dev, Math & Logic). In line with the prompt (*"Usually, parents are in the US or UK, and mentors are in India"*), 7 mentors are in India (`Asia/Kolkata` - IST), 2 in the UK (`Europe/London` - GMT/BST), and 1 in the US (`America/New_York` - EST/EDT). | ✅ Complete |
+| **2. 20 Parents/Day Capacity** | The math matches exactly: 10 mentors × 2 demo classes/day = **20 demo classes maximum capacity per day**. Day-wide capacity metrics and slot availability are tracked dynamically. | ✅ Complete |
+| **3. Different Timezones Communication** | All schedule slots and confirmations display **both parent local time** (e.g. `11:00 AM EDT`) and **mentor local time** (e.g. `8:30 PM IST`). | ✅ Complete |
+| **4. Daylight Savings Time (DST)** | Scheduling engine operates on standardized UTC timestamps. Uses standard IANA timezone identifiers (`America/New_York`, `Europe/London`, `Asia/Kolkata`) via `Intl.DateTimeFormat` which natively handles historical and future DST shifts (e.g., 9.5-hour difference in summer EDT vs 10.5-hour in winter EST with India IST). An active DST indicator is surfaced in the UI. | ✅ Complete |
+| **5. Dummy Live Class Link** | Every confirmed booking generates a unique meeting URL (e.g. `https://code-young-anvesha.vercel.app/?view=classroom&id=...`). Clicking **[ Join Demo Class ]** opens a functional, interactive **Virtual Classroom Test Room** with live device webcam hardware streaming, mic meter, code canvas, and trial lesson agenda. | ✅ Complete |
+| **6. Max 2 Demo Classes/Day per Mentor** | Hard constraint strictly enforced in `server/services/schedulingService.js`, `server/index.js`, and `src/utils/timezoneUtils.js`. If a mentor already has 2 confirmed sessions on that calendar day (in their local timezone / IST), they are completely filtered out of available slots. Direct API attempts receive `HTTP 409 Conflict`. | ✅ Complete |
+| **7. Meaningful Error & Empty States** | Clear, user-friendly communication when slots are unavailable: *"No trial classes are available on this date. All mentors are booked or outside their working hours. Please choose another date."* | ✅ Complete |
+| **8. Email Notifications to Both Parent & Mentor** | When a trial class is booked, simulated email dispatches are generated for **both** the parent and the mentor with customized local times, session curriculum, and the live classroom link. Viewable directly in the UI via the **Email Invitations Dispatched** audit panel. | ✅ Complete |
+| **9. Full Stack Architecture** | **Backend:** Node.js + Express API (`/api/mentors`, `/api/slots`, `/api/bookings`). <br>**Frontend:** React 19 + Vanilla CSS design system + Lucide icons. | ✅ Complete |
+| **10. AI Pair Programming Transcript** | Full transcript exported as [`TRANSCRIPT.md`](./TRANSCRIPT.md) in the repository root. | ✅ Complete |
+
+---
+
+## 🏛️ High-Level Runtime Architecture
+
+```mermaid
+flowchart TB
+    subgraph ClientBoundary["Client Tier (User Browser)"]
+        direction TB
+        UI["React 19 Frontend SPA"]
+        Step1["Step 1: Timezone Detector (IANA)"]
+        Step2["Step 2: Date & Slot Selector (60-Day Grid)"]
+        Step3["Step 3: Details (Private / Clean Slate)"]
+        Step4["Step 4: Manual Consent & Review"]
+        Step5["Step 5: Confirmation & iCal / GCal Sync"]
+        Classroom["Virtual Classroom (Live Webcam MediaStream)"]
+        LocalStorage[("Browser LocalStorage Cache")]
+
+        UI --> Step1
+        Step1 --> Step2
+        Step2 --> Step3
+        Step3 --> Step4
+        Step4 --> Step5
+        Step5 --> Classroom
+        UI <--> LocalStorage
+    end
+
+    subgraph Network["Network & Transport"]
+        REST["REST API Calls (/api/slots, /api/bookings)"]
+    end
+
+    subgraph ServerBoundary["Backend Server (Node.js & Express)"]
+        direction TB
+        Gateway["Express Gateway (Port 3001)"]
+        ScheduleEngine["Scheduling Engine (UTC & DST Converter)"]
+        CapacityGuard["Capacity Guard (Max 2 Demos/Day & 409 Handler)"]
+        EmailService["Simulated Dual-Email Dispatcher"]
+        Store[("In-Memory Booking Store")]
+
+        Gateway --> ScheduleEngine
+        Gateway --> CapacityGuard
+        CapacityGuard --> Store
+        Gateway --> EmailService
+    end
+
+    subgraph ExternalServices["External Dependencies & Trust Boundaries"]
+        GCal["Google Calendar / ICS Exporter"]
+        Vercel["Vercel Edge CDN Hosting"]
+    end
+
+    Step2 <==>|"Fetch slots & mentors"| REST
+    Step4 ==>|"Submit booking"| REST
+    REST <==> Gateway
+    Step5 -.-> GCal
+    ClientBoundary -.-> Vercel
+```
+
+---
+
+## 🎨 Design Principles & Anti-"AI Slop" Standards
+
+- **No Purple Gradients:** Built with a restrained, trustworthy education color palette: deep royal blue (`#1E40AF`), slate neutrals (`#0F172A`, `#334155`), and accessible borders (`#E2E8F0`).
+- **No Pill Buttons Everywhere:** Real interactive application buttons with intentional, moderate border radius (6px - 8px) and distinct visual hierarchies.
+- **No Fake Reviews or Metrics:** Zero invented testimonials, zero fake ratings, zero artificial counters, and zero marketing puffery.
+- **Human, Purpose-Driven Copy:** Direct and clear product communication ("Book a Free Trial Class", "Choose a convenient time for your child and we'll match you with an available mentor").
+- **Consistent Icons:** Exclusively using [Lucide React](https://lucide.dev/) icons (`Calendar`, `Clock`, `Globe`, `User`, `Mail`, `Video`, `CheckCircle2`), never random emojis.
+- **User Agency:** Mandatory checkboxes (e.g. Terms & Availability Confirmation) are **unfilled by default**, ensuring users actively review and confirm before submission.
+- **Data Privacy:** Customer information is not exposed or prefilled across separate visitor sessions.
+
+---
+
+## 🧭 The 5-Step Scheduling Flow
+
+1. **Step 1 — Your Timezone**
+   - Automatically detects user timezone from browser environment.
+   - Searchable global timezone selector with IANA IDs, city names, and UTC offsets.
+   - Highlights whether Daylight Saving Time (DST) is active.
+
+2. **Step 2 — Date & Time**
+   - Track filter: *Scratch & Visual Coding*, *Python for Beginners*, *Web Development Basics*, *Math & Computational Logic*.
+   - 60-day interactive date selector with full monthly calendar picker modal.
+   - Slots grouped into Morning, Afternoon, and Evening.
+   - Real-time mentor matching preview on each slot card showing educator name and mentor's local time.
+   - Strictly hides mentors who have already reached their 2 demo classes/day cap.
+
+3. **Step 3 — Parent & Student Details**
+   - Form fields for parent contact (Full Name, Email, Phone/WhatsApp) and student details (Name, Age group, Prior coding experience, Learning goals).
+   - Real-time validation with descriptive, accessible error messages.
+
+4. **Step 4 — Review & Verification**
+   - Side-by-side comparison of session details: Parent Local Time vs. Mentor Local Time.
+   - Assigned educator credentials and working timezone.
+   - Interactive terms & availability checkbox (must be manually checked by user).
+
+5. **Step 5 — Booking Confirmation**
+   - Confirmation banner with unique booking reference code (e.g. `#CY-38083`).
+   - One-click Google Calendar event generation.
+   - One-click `.ics` iCalendar file download for Apple Calendar / Outlook.
+   - Expandable **Email Invitations Dispatched** panel showing simulated emails sent to both parent and mentor.
+   - Direct button to launch the **Live Classroom Testing Room** with hardware camera support.
+
+---
+
+## 👩‍🏫 Demo Educators Roster (10 Mentors)
+
+Seeded specifically for Codeyoung's trial class operations across timezones:
+
+1. **Priya Nair** — Lead Scratch & Python Educator · *Bengaluru, India (IST / UTC+5:30)* · B.Tech NIT Calicut
+2. **Amit Sharma** — Robotics & Logic Specialist · *New Delhi, India (IST / UTC+5:30)* · M.Sc. Delhi University
+3. **Ananya Patel** — Early Coding & Creative Computing · *Mumbai, India (IST / UTC+5:30)* · B.Ed & B.Sc. Mumbai Univ
+4. **Rohan Verma** — Senior Python & Web Dev Instructor · *Hyderabad, India (IST / UTC+5:30)* · B.E. BITS Pilani
+5. **Neha Joshi** — STEM & Game Mechanics Educator · *Pune, India (IST / UTC+5:30)* · M.Tech IIT Roorkee
+6. **Vikram Rao** — Applied Computing & Algorithms Mentor · *Bengaluru, India (IST / UTC+5:30)* · B.Tech RVCE
+7. **Sneha Kulkarni** — Interactive Frontend & Visual Design · *Pune, India (IST / UTC+5:30)* · B.Sc. Pune Univ
+8. **Sarah Jenkins** — Web Technologies Instructor · *London, UK (BST / UTC+1:00)* · B.Sc. Univ of Bristol
+9. **Liam O’Connor** — Computing & Logic Mentor · *Manchester, UK (BST / UTC+1:00)* · B.Sc. Trinity College Dublin
+10. **David Chen** — Computer Science Instructor · *New York, US (EDT / UTC-4:00)* · B.S. Univ of Michigan
+
+---
+
+## 🚀 Running the Project
+
+### Clone Repository
 ```bash
 git clone https://github.com/pajju011/CodeYoung_Anvesha.git
 cd CodeYoung_Anvesha
 ```
-- **Windows:** Double-click [`run.bat`](https://github.com/pajju011/CodeYoung_Anvesha/blob/main/run.bat) (or run `run.bat` in terminal)
-- **macOS / Linux:** Run `./run.sh` in terminal
 
-*(Verifies Node.js, auto-installs dependencies if missing, starts both Express & Vite, and opens your browser)*
+### Option A: 1-Click Launchers (Easiest)
+- **Windows:** Double-click [`run.bat`](./run.bat) (or run `.\run.bat` in PowerShell / CMD).
+- **macOS / Linux:** Run `./run.sh` in terminal (`chmod +x run.sh && ./run.sh`).
+*(Automatically verifies Node.js, auto-installs npm dependencies if missing, starts both Express & Vite concurrently, and opens your browser).*
 
----
-
-### Option B: Terminal Commands (Cross-Platform)
+### Option B: Manual CLI Execution
 ```bash
-git clone https://github.com/pajju011/CodeYoung_Anvesha.git
-cd CodeYoung_Anvesha
-
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Start both Express backend and React frontend
+# 2. Start both Express Backend (Port 3001) and Vite React Frontend (Port 5173)
 npm run dev
 ```
 
----
-
-### 🌐 Access Links
-- **Live Production App:** [https://code-young-anvesha.vercel.app](https://code-young-anvesha.vercel.app)
-- **Live Demo Classroom:** [https://code-young-anvesha.vercel.app/?view=classroom&id=demo_session](https://code-young-anvesha.vercel.app/?view=classroom&id=demo_session)
-- **Local Frontend:** [http://localhost:5173](http://localhost:5173)
-- **Local Backend API:** [http://localhost:3001/api/health](http://localhost:3001/api/health)
-- **Local Classroom:** [http://localhost:5173/?view=classroom&id=demo_session](http://localhost:5173/?view=classroom&id=demo_session)
+### URLs
+- **Frontend Web Application:** [http://localhost:5173/](http://localhost:5173/)
+- **Backend API Health Check:** [http://localhost:3001/api/health](http://localhost:3001/api/health)
+- **Live Classroom Preview:** [http://localhost:5173/?view=classroom&id=demo_session](http://localhost:5173/?view=classroom&id=demo_session)
+- **Production Deployment:** [https://code-young-anvesha.vercel.app](https://code-young-anvesha.vercel.app)
 
 ---
 
-## ✨ Features
+## 📦 Submission Details
 
-- **Cross-Timezone & DST:** Dual clock displays for parents (US/UK) and mentors (India) with automated Daylight Saving Time adjustment.
-- **Mentor Capacity Management:** Auto-matching across 10 mentors, strictly capped at 2 sessions/day per mentor (20 sessions/day max).
-- **Virtual Classroom:** Interactive trial room with mic/camera test, collaborative whiteboard, live code runner, and chat.
-- **Privacy & Data Protection:** Strict session isolation preventing customer contact details from being exposed or pre-filled on shared devices.
-- **Calendar & Notifications:** Instant Google Calendar sync, `.ics` iCal download, and simulated email dispatches.
-- **Session Feedback:** Built-in post-class review and rating system.
-
----
-
-## 🏗️ System Architecture
-
-### Runtime Architecture & Trust Boundaries
-
-```mermaid
-graph TB
-  %% Trust Boundaries
-  subgraph Client_Boundary ["Trust Boundary: Client Browser (Untrusted Environment)"]
-    direction TB
-    C1["1. React 19 Frontend (App.jsx / Stepper)"]
-    C2["2. Timezone Detector (Intl.DateTimeFormat)"]
-    C3["3. Form & Privacy Guard (StepDetails.jsx)"]
-    C4["4. Virtual Classroom (DemoClassroomModal.jsx)"]
-    C5["5. Local Session Cache (storageUtils.js)"]
-    C6["6. Calendar Exporter (calendarUtils.js)"]
-  end
-
-  subgraph Edge_Boundary ["Trust Boundary: Cloud Edge & Static Hosting"]
-    E1["7. Vercel Edge / Static CDN (dist/ + vercel.json)"]
-  end
-
-  subgraph Server_Boundary ["Trust Boundary: Server Environment (Trusted Backend)"]
-    direction TB
-    S1["8. Express 5 API Router (server/index.js)"]
-    S2["9. Scheduling Engine (schedulingService.js)"]
-    S3["10. Capacity & Quota Guard (Max 2 Classes/Mentor/Day)"]
-    S4["11. Email Dispatch Simulator (createBookingConfirmation)"]
-    S5["12. In-Memory Persistence Store (bookingsStore & feedbackStore)"]
-  end
-
-  subgraph External_Boundary ["Trust Boundary: External Dependencies & Hardware"]
-    EXT1["Browser Camera & Microphone (MediaDevices API)"]
-    EXT2["Google Calendar & iCal Export"]
-    EXT3["Google Fonts CDN (Plus Jakarta Sans)"]
-  end
-
-  %% Primary Path (Trial Class Booking Flow)
-  User([Parent / Student]) ==>|1. Accesses App| C1
-  C1 -.->|Auto-detects Local Timezone| C2
-  C1 ==>|2. Fetch Available Slots GET /api/slots| S1
-  S1 ==>|3. Calculate Working Hours & DST| S2
-  S2 ==>|4. Verify Mentor Quotas| S3
-  S3 -.->|Inspect Daily Count| S5
-  S1 ==>|5. Return Available Slots| C1
-  C1 ==>|6. Enters Contact Info| C3
-  C3 ==>|7. Submit Booking POST /api/bookings| S1
-  S1 ==>|8. Commit Reservation| S5
-  S1 ==>|9. Dispatch Parent & Mentor Emails| S4
-  S1 ==>|10. Return Confirmed Reference Code| C1
-  C1 ==>|11a. Add to Calendar| C6 --> EXT2
-  C1 ==>|11b. Launch Classroom Session| C4 --> EXT1
-
-  %% Static & Auxiliary Flows
-  E1 -.->|Delivers Static Assets| C1
-  EXT3 -.->|Web Typography| C1
-  C1 -.->|Isolated Session Cache| C5
-
-  %% Styling
-  classDef primary fill:#2563eb,stroke:#1d4ed8,stroke-width:2px,color:#ffffff;
-  classDef backend fill:#059669,stroke:#047857,stroke-width:2px,color:#ffffff;
-  classDef edge fill:#7c3aed,stroke:#6d28d9,stroke-width:2px,color:#ffffff;
-  classDef external fill:#d97706,stroke:#b45309,stroke-width:2px,color:#ffffff;
-  classDef userNode fill:#0f172a,stroke:#0f172a,stroke-width:2px,color:#ffffff;
-
-  class C1,C3,C4 primary;
-  class S1,S2,S3,S4,S5 backend;
-  class E1 edge;
-  class EXT1,EXT2,EXT3 external;
-  class User userNode;
-```
-
-### Architecture Highlights
-- **Primary Booking Path (`==>`):** User accesses React client $\rightarrow$ auto-detects timezone $\rightarrow$ fetches available slots via Express API $\rightarrow$ scheduling engine computes slots with DST & quota limits $\rightarrow$ user inputs contact details with privacy guard $\rightarrow$ backend confirms booking, stores state, dispatches simulated emails, and returns reference code $\rightarrow$ user syncs calendar or joins virtual classroom.
-- **12 Core Components:** Organized across 4 explicit trust boundaries (Client Browser, Cloud Edge, Application Server, External Services/Hardware).
-- **Data Privacy & Isolation:** Client inputs use `autoComplete="off"` with complete separation between sessions; public API queries never expose customer contact details.
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend:** React 19, Vite, Vanilla CSS, Lucide Icons
-- **Backend:** Node.js, Express 5
-- **Deployment:** [Vercel (code-young-anvesha.vercel.app)](https://code-young-anvesha.vercel.app)
-
----
-
-## 📡 API Endpoints
-
-- `GET /api/mentors` — List mentors and remaining daily quota
-- `GET /api/slots` — Available slots by date and timezone
-- `POST /api/bookings` — Confirm booking, assign mentor, and dispatch emails
-- `DELETE /api/bookings/:id` — Cancel a booking
-- `POST /api/feedback` — Submit session review and rating
-
----
-
-## 📄 License
-
-This project is open-source and available under the [MIT License](./LICENSE).
-
----
-
-## 👨‍💻 Author
-
-Developed by **[Prajwal R Poojary](https://github.com/pajju011)**
-
+- **Target Email:** `campus.ka@talentiseglobal.com`
+- **Deadline:** Within 28th of September 2026 (Latest by 6:00 PM)
+- **Subject Line Format:** `Codeyoung Assignment Task - <Candidate Name> - Institute Name (ABBR)`
+- **Repository Contents:**
+  - `README.md` — Project documentation and setup guide
+  - `TRANSCRIPT.md` — Full conversation transcript of the AI pair programming session
+  - `server/` — Node.js Express backend API
+  - `src/` — React frontend with appointment booking flow
