@@ -206,7 +206,6 @@ export function App() {
       <DemoClassroomModal
         booking={targetBooking}
         isStandalonePage={true}
-        role={classroomRole}
         onClose={() => {
           if (window.opener) {
             window.close();

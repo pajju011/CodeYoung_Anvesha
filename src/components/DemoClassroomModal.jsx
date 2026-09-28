@@ -7,7 +7,7 @@ import {
 import { DEMO_MENTORS } from '../data/mentors';
 import { ClassFeedbackModal } from './ClassFeedbackModal';
 
-export function DemoClassroomModal({ booking, onClose, isStandalonePage = false, role = 'parent' }) {
+export function DemoClassroomModal({ booking, onClose, isStandalonePage = false }) {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
@@ -539,9 +539,6 @@ export function DemoClassroomModal({ booking, onClose, isStandalonePage = false,
           <h2 id="classroom-title" className="classroom-title-text">
             Anvesha Live Classroom — {booking.trackTitle}
           </h2>
-          <span className={`badge ${role === 'mentor' ? 'badge-warning' : 'badge-primary'}`}>
-            {role === 'mentor' ? '👨‍🏫 Educator Mode' : '👨‍👩‍👧 Student Mode'}
-          </span>
         </div>
 
         <div className="classroom-header-actions">
